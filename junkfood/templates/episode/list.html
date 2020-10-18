@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}
+
+{% block app_content %}
+<ul>
+{% for i in episodes %}
+    <li><a href="{{ i }}">{{ i }}</a></li>
+{% endfor %}
+</ul>
+
+{% endblock %}
