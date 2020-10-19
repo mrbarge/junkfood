@@ -33,3 +33,15 @@ def get_episodes():
     results = [episode.episode for episode in all_episodes]
     return results
 
+
+def get_transcripts(episode):
+    '''
+    Retrieve a transcript for the given episode
+    :return: Transcript
+    '''
+    try:
+        all_transcripts = Transcript.query.filter(Transcript.episode == episode).order_by(Transcript.index)
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise Exception()
+
+    return all_transcripts

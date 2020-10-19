@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}
+
+{% block app_content %}
+
+<table>
+
+{% for t in transcripts %}
+    <tr>
+        <td>{{ t.timecode }}</td>
+        <td>{{ t.speaker }}</td>
+        <td>{{ t.transcript }}</td>
+    </tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}
