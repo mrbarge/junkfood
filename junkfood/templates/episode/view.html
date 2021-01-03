@@ -8,13 +8,13 @@
 
 <table>
 
-{% for t in transcripts %}
+    {% for t in transcripts %}
     <tr>
-        <td>{{ t.timecode }}</td>
+        <td><a id="tc_{{ t.timecode_secs }}"/>{{ t.timecode }}</td>
         <td>{{ t.speaker }}</td>
         <td>{{ t.transcript }}</td>
     </tr>
-{% endfor %}
+    {% endfor %}
 
 </table>
 

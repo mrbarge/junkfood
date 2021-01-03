@@ -35,11 +35,12 @@ def create_app():
     with app.app_context():
         from junkfood.base import base_bp
         from junkfood.episode import episode_bp
-
+        from junkfood.search import search_bp
 
         # add blueprints
         app.register_blueprint(base_bp, url_prefix='/')
         app.register_blueprint(episode_bp, url_prefix='/episode')
+        app.register_blueprint(search_bp, url_prefix='/search')
 
 
         return app
