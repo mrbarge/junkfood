@@ -6,7 +6,19 @@
 
 {% block app_content %}
 
+<p>
+    <b>Episode:</b> {{ episode.id }} ({{ episode.date }})<br/>
+    <b>Homepage:</b> <a href="{{ episode.homepage }}">Link</a><br/>
+    <b>Listen:</b> <a href="{{ episode.media }}">mp3</a><br/>
+</p>
+
 <table>
+
+    <tr>
+        <th>Timecode</th>
+        <th>Speaker</th>
+        <th>Transcript</th>
+    </tr>
 
     {% for t in transcripts %}
     <tr>

@@ -6,11 +6,13 @@ episode_bp = Blueprint('episode_bp', __name__)
 
 @episode_bp.route('/')
 def home():
-    episodes = models.get_episodes()
+    episodes = models.get_all_episode_ids()
     return render_template('episode/list.html', episodes=episodes)
 
 
-@episode_bp.route('/<episode>', methods=['GET'])
-def view(episode):
-    transcripts = models.get_transcripts(episode)
-    return render_template('episode/view.html', transcripts=transcripts)
+@episode_bp.route('/<episodeId>', methods=['GET'])
+def view(episodeId):
+    episode = models.get_episode(episodeId)
+    print(episode)
+    transcripts = models.get_transcripts(episodeId)
+    return render_template('episode/view.html', episode=episode, transcripts=transcripts)

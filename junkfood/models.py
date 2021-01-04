@@ -7,12 +7,23 @@ from . import db
 from sqlalchemy.dialects.postgresql import JSON
 
 
+class Episode(db.Model):
+    __tablename__ = 'episodes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date)
+    homepage = db.Column(db.String(255))
+    media = db.Column(db.String(255))
+
+
 class Transcript(db.Model):
     __tablename__ = 'transcripts'
 
     id = db.Column(db.Integer, primary_key=True)
     index = db.Column(db.Integer)
-    episode = db.Column(db.Integer)
+    episode = db.Column(db.Integer,
+        db.ForeignKey('episodes.id'),
+    )
     speaker = db.Column(db.String(15))
     timecode = db.Column(db.String(8))
     timecode_secs = db.Column(db.Integer)
@@ -46,18 +57,37 @@ class TranscriptMovies(db.Model):
     )
 
 
-def get_episodes():
+def get_episode(id):
+    '''
+    Retrieve episode with id.
+    :return: List of episode numbers
+    '''
+    try:
+        episode = Episode.query.filter(Episode.id == id).first()
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise Exception()
+
+    return episode
+
+
+def get_all_episode_ids(has_transcript=True):
     '''
     Retrieve all episodes.
     :return: List of episode numbers
     '''
     try:
-        all_episodes = Transcript.query.distinct(Transcript.episode)
+        if has_transcript:
+            rows = Transcript.query.distinct(Transcript.episode)
+            results = [transcript.episode for transcript in rows]
+        else:
+            rows = Episode.query.distinct(Episode.id)
+            results = [episode.id for episode in rows]
+
+        return results
+
     except sqlalchemy.exc.SQLAlchemyError:
         raise Exception()
 
-    results = [episode.episode for episode in all_episodes]
-    return results
 
 
 def get_transcripts(episode):

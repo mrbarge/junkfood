@@ -44,7 +44,7 @@
     </tr>
     {% for match in matches %}
     <tr>
-        <td><a href="{{ url_for('episode_bp.view', episode=match.episode) }}#tc_{{ match.timecode_secs }}">{{
+        <td><a href="{{ url_for('episode_bp.view', episodeId=match.episode) }}#tc_{{ match.timecode_secs }}">{{
             match.episode }}</td>
         <td>{{ match.speaker }}</td>
         <td>{{ match.timecode_secs }}</td>
