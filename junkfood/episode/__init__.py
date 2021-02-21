@@ -13,6 +13,5 @@ def home():
 @episode_bp.route('/<episodeId>', methods=['GET'])
 def view(episodeId):
     episode = models.get_episode(episodeId)
-    print(episode)
     transcripts = models.get_transcripts(episodeId)
     return render_template('episode/view.html', episode=episode, transcripts=transcripts)
