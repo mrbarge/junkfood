@@ -3,7 +3,7 @@ from sqlalchemy import Index, distinct, func, desc
 from sqlalchemy.orm import relationship
 import sqlalchemy
 
-from . import db
+from . import db, searchquery
 from sqlalchemy.dialects.postgresql import JSON
 
 
@@ -22,8 +22,8 @@ class Transcript(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     index = db.Column(db.Integer)
     episode = db.Column(db.Integer,
-        db.ForeignKey('episodes.id'),
-    )
+                        db.ForeignKey('episodes.id'),
+                        )
     speaker = db.Column(db.String(15))
     timecode = db.Column(db.String(8))
     timecode_secs = db.Column(db.Integer)
@@ -89,7 +89,6 @@ def get_all_episode_ids(has_transcript=True):
         raise Exception()
 
 
-
 def get_transcripts(episode):
     '''
     Retrieve a transcript for the given episode
@@ -122,7 +121,30 @@ def get_speakers():
     return speakers
 
 
-def search(transcript, episode, speaker):
+def search(query):
+    '''
+    Retrieve episodes matching query
+    :param query:
+    :return:
+    '''
+    parsed_query = searchquery.parse_query(query)
+
+    match_query = Transcript.query.filter()
+    if searchquery.PHRASE_KEY in parsed_query:
+        for phrase in parsed_query[searchquery.PHRASE_KEY]:
+            match_query = match_query.filter(Transcript.transcript.contains(phrase))
+    if searchquery.EPISODE_KEY in parsed_query:
+        iv = int(parsed_query[searchquery.EPISODE_KEY][0])
+        match_query = match_query.filter(Transcript.episode == iv)
+    if searchquery.SPEAKER_KEY in parsed_query:
+        match_query = match_query.filter(Transcript.speaker.match(parsed_query[searchquery.SPEAKER_KEY][0]))
+
+    print(match_query)
+    matches = match_query.order_by(Transcript.episode).order_by(Transcript.timecode_secs).all()
+    return matches
+
+
+def searchFields(transcript, episode, speaker):
     try:
         match_query = Transcript.query.filter(Transcript.transcript.contains(transcript))
         if episode:

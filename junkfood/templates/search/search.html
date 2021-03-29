@@ -1,57 +1,69 @@
 {% extends 'layout.html' %}
 
 {% block scripts %}
-{{ super() }}
+    {{ super() }}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            function replaceLastTerm(e, word) {
+                var res = e.value.split(" ");
+                res.pop();
+                return (res.join(" ") + word);
+            };
+
+            $("#search_autocomplete").autocomplete({
+                source: function (request, response) {
+                    $.getJSON("{{url_for('search_bp.autocomplete')}}", {
+                        q: request.term,
+                    }, function (data) {
+                        response(data.matching_results);
+                    });
+                },
+                minLength: 5,
+                select: function (event, ui) {
+                    {#$("#search_autocomplete").val(replaceLastTerm(this, ui.item[0]));#}
+                    console.log(ui.item.value);
+                }
+            });
+        })
+    </script>
 {% endblock %}
 
 {% block app_content %}
-<form action="" method="post" novalidate class="form-inline">
-    {{ form.hidden_tag() }}
-    <p>
-    <div class="form-group mx-sm-3 mb-2">
-        {{ form.speakers.label }}
-        {{ form.speakers(class='form-control', placeholder='Speaker') }}
-    </div>
-    </p>
-    <p>
-    <div class="form-group mx-sm-3 mb-2">
-        {{ form.episode.label }}
-        {{ form.episode(size=4, class='form-control', placeholder='Episode No.') }}
-        {% for error in form.episode.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </div>
-    </p>
-    <p>
-    <div class="form-group mx-sm-3 mb-2">
-        {{ form.transcript.label }}
-        {{ form.transcript(size=60, class='form-control', placeholder='Transcript') }}
-        {% for error in form.transcript.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </div>
-    </p>
-    <p>{{ form.submit(class='btn btn-primary mb-2') }}</p>
-</form>
+    <form action="" method="post" novalidate class="form-inline">
+        {{ form.hidden_tag() }}
+        <p>
+        <div class="form-group mx-sm-3 mb-2">
+            {{ form.search.label }}
+            {{ form.search(size=60,class='form-control', placeholder='Search') }}
+            {% for error in form.search.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+        </p>
+        <p>{{ form.submit(class='btn btn-primary mb-2') }}</p>
+    </form>
 
-{% if matches %}
-<table>
-    <tr>
-        <th>Episode</th>
-        <th>Speaker</th>
-        <th>Timecode</th>
-        <th>Transcript</th>
-    </tr>
-    {% for match in matches %}
-    <tr>
-        <td><a href="{{ url_for('episode_bp.view', episodeId=match.episode) }}#tc_{{ match.timecode_secs }}">{{
-            match.episode }}</td>
-        <td>{{ match.speaker }}</td>
-        <td>{{ match.timecode_secs }}</td>
-        <td>{{ match.transcript }}</td>
-    </tr>
-    {% endfor %}
-</table>
-{% endif %}
+    {% if matches %}
+        <table>
+            <tr>
+                <th>Episode</th>
+                <th>Speaker</th>
+                <th>Timecode</th>
+                <th>Transcript</th>
+            </tr>
+            {% for match in matches %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('episode_bp.view', episodeId=match.episode) }}#tc_{{ match.timecode_secs }}">{{ match.episode }}
+                    </td>
+                    <td>{{ match.speaker }}</td>
+                    <td>{{ match.timecode_secs }}</td>
+                    <td>{{ match.transcript }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
 
 {% endblock %}

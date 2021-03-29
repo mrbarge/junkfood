@@ -5,7 +5,5 @@ from flask import current_app
 
 
 class SearchForm(FlaskForm):
-    transcript = StringField('Transcript', validators=[DataRequired()])
-    speakers = SelectField('Speaker', validators=[Optional()])
-    episode = IntegerField('Episode', validators=[Optional()])
+    search = StringField('Search', validators=[DataRequired()], id='search_autocomplete')
     submit = SubmitField('Search')
