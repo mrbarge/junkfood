@@ -37,16 +37,16 @@ def parse_query(query):
     for elem in elements:
         if elem.startswith(EPISODE_PREFIX):
             subelem = elem[len(EPISODE_PREFIX):]
-            v = parse_episode(subelem)
-            query_components[EPISODE_KEY].append(subelem)
+            if parse_episode(subelem):
+                query_components[EPISODE_KEY].append(subelem)
         elif elem.startswith(SINCE_PREFIX):
             subelem = elem[len(SINCE_PREFIX):]
-            v = parse_date(subelem)
-            query_components[SINCE_KEY] = [subelem]
+            if parse_date(subelem):
+                query_components[SINCE_KEY] = [subelem]
         elif elem.startswith(UNTIL_PREFIX):
             subelem = elem[len(UNTIL_PREFIX):]
-            v = parse_date(subelem)
-            query_components[UNTIL_KEY] = [subelem]
+            if parse_date(subelem):
+                query_components[UNTIL_KEY] = [subelem]
         elif elem.startswith(SPEAKER_PREFIX):
             subelem = elem[len(SPEAKER_PREFIX):]
             query_components[SPEAKER_KEY] = [subelem]

@@ -5,13 +5,6 @@
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript">
         $(function () {
-
-            function replaceLastTerm(e, word) {
-                var res = e.value.split(" ");
-                res.pop();
-                return (res.join(" ") + word);
-            };
-
             $("#search_autocomplete").autocomplete({
                 source: function (request, response) {
                     $.getJSON("{{url_for('search_bp.autocomplete')}}", {
@@ -21,10 +14,6 @@
                     });
                 },
                 minLength: 5,
-                select: function (event, ui) {
-                    {#$("#search_autocomplete").val(replaceLastTerm(this, ui.item[0]));#}
-                    console.log(ui.item.value);
-                }
             });
         })
     </script>

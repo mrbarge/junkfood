@@ -14,7 +14,7 @@ def autocomplete():
         if terms[-1] == 'speaker:':
             speakers = models.get_speakers()
             retdata = {
-                'matching_results': [' '.join(terms[:-1] + [f'speaker={s[0]}']) for s in speakers]
+                'matching_results': [' '.join(terms[:-1] + [f'speaker:{s[0]}']) for s in speakers]
             }
             return Response(json.dumps(retdata), mimetype='application/json')
         return Response(json.dumps('{"matching_results": []}'), mimetype='application/json')

@@ -1,6 +1,6 @@
 from flask_login import UserMixin
 from sqlalchemy import Index, distinct, func, desc
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, sessionmaker
 import sqlalchemy
 
 from . import db, searchquery
@@ -129,17 +129,20 @@ def search(query):
     '''
     parsed_query = searchquery.parse_query(query)
 
-    match_query = Transcript.query.filter()
+    Session = sessionmaker(bind=db.engine)
+    match_query = Session().query(Transcript).join(Episode).filter()
     if searchquery.PHRASE_KEY in parsed_query:
         for phrase in parsed_query[searchquery.PHRASE_KEY]:
-            match_query = match_query.filter(Transcript.transcript.contains(phrase))
+            match_query = match_query.filter(Transcript.transcript.ilike(f'%{phrase}%'))
     if searchquery.EPISODE_KEY in parsed_query:
         iv = int(parsed_query[searchquery.EPISODE_KEY][0])
         match_query = match_query.filter(Transcript.episode == iv)
     if searchquery.SPEAKER_KEY in parsed_query:
         match_query = match_query.filter(Transcript.speaker.match(parsed_query[searchquery.SPEAKER_KEY][0]))
-
-    print(match_query)
+    if searchquery.SINCE_KEY in parsed_query:
+        match_query = match_query.filter(Episode.date >= parsed_query[searchquery.SINCE_KEY][0])
+    if searchquery.UNTIL_KEY in parsed_query:
+        match_query = match_query.filter(Episode.date <= parsed_query[searchquery.UNTIL_KEY][0])
     matches = match_query.order_by(Transcript.episode).order_by(Transcript.timecode_secs).all()
     return matches
 
