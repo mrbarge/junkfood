@@ -26,8 +26,6 @@ def autocomplete():
 @search_bp.route('/', methods=['GET', 'POST'])
 @search_bp.route('/<int:page>/<search>', methods=['GET', 'POST'])
 def search(page=None, search=None):
-
-    print(f'Page: {page} and Search: {search}')
     search_form = SearchForm()
     matches = []
 
