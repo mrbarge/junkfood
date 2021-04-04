@@ -5,6 +5,7 @@ class Config(object):
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
+    ITEMS_PER_PAGE = 20
     if 'SECRET_KEY' in os.environ:
         SECRET_KEY = os.environ['SECRET_KEY']
     if 'DATABASE_URI' in os.environ:

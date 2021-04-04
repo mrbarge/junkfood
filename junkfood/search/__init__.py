@@ -1,5 +1,5 @@
 import json
-from flask import redirect, url_for, Blueprint, render_template, request, Response
+from flask import redirect, url_for, Blueprint, render_template, request, Response, current_app, session
 from junkfood.search.forms import SearchForm
 from junkfood import models
 
@@ -24,13 +24,21 @@ def autocomplete():
 
 
 @search_bp.route('/', methods=['GET', 'POST'])
-def search():
+@search_bp.route('/<int:page>/<search>', methods=['GET', 'POST'])
+def search(page=None, search=None):
+
+    print(f'Page: {page} and Search: {search}')
     search_form = SearchForm()
     matches = []
 
     if request.method == 'POST':
         if search_form.validate():
-            query = search_form.search.data
-            matches = models.search(query)
+            search = search_form.search.data
+            page = request.args.get('page', 1, type=int)
+            return redirect(url_for('search_bp.search', page=page, search=search))
+
+    if page is not None and search is not None:
+        matches = models.search(search, page, current_app.config['ITEMS_PER_PAGE'])
+        return render_template('search/search.html', form=search_form, matches=matches, search=search)
 
     return render_template('search/search.html', form=search_form, matches=matches)

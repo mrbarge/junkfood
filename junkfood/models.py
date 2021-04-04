@@ -121,7 +121,7 @@ def get_speakers():
     return speakers
 
 
-def search(query):
+def search(query, page, items_per_page):
     '''
     Retrieve episodes matching query
     :param query:
@@ -129,8 +129,9 @@ def search(query):
     '''
     parsed_query = searchquery.parse_query(query)
 
-    Session = sessionmaker(bind=db.engine)
-    match_query = Session().query(Transcript).join(Episode).filter()
+    # Session = sessionmaker(bind=db.engine)
+    # match_query = Session().query(Transcript).join(Episode).filter()
+    match_query = Transcript.query.join(Episode).add_columns(Episode.date, Episode.id).filter()
     if searchquery.PHRASE_KEY in parsed_query:
         for phrase in parsed_query[searchquery.PHRASE_KEY]:
             match_query = match_query.filter(Transcript.transcript.ilike(f'%{phrase}%'))
@@ -143,7 +144,9 @@ def search(query):
         match_query = match_query.filter(Episode.date >= parsed_query[searchquery.SINCE_KEY][0])
     if searchquery.UNTIL_KEY in parsed_query:
         match_query = match_query.filter(Episode.date <= parsed_query[searchquery.UNTIL_KEY][0])
-    matches = match_query.order_by(Transcript.episode).order_by(Transcript.timecode_secs).all()
+
+    #matches = match_query.order_by(Transcript.episode).order_by(Transcript.timecode_secs).all()
+    matches = match_query.order_by(Transcript.episode).order_by(Transcript.timecode_secs).paginate(page, items_per_page, False)
     return matches
 
 

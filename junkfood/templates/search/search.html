@@ -42,17 +42,21 @@
                 <th>Timecode</th>
                 <th>Transcript</th>
             </tr>
-            {% for match in matches %}
+            {% for match in matches.items %}
                 <tr>
                     <td>
-                        <a href="{{ url_for('episode_bp.view', episodeId=match.episode) }}#tc_{{ match.timecode_secs }}">{{ match.episode }}
+                        <a href="{{ url_for('episode_bp.view', episodeId=match.id) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.id }}
                     </td>
-                    <td>{{ match.speaker }}</td>
-                    <td>{{ match.timecode_secs }}</td>
-                    <td>{{ match.transcript }}</td>
+                    <td>{{ match.Transcript.speaker }}</td>
+                    <td>{{ match.Transcript.timecode_secs }}</td>
+                    <td>{{ match.Transcript.transcript }}</td>
                 </tr>
             {% endfor %}
         </table>
+
+        {% if matches.has_prev %}<a href="{{ url_for('search_bp.search', page=matches.prev_num, search=search) }}">&lt;&lt; Previous page</a>{% else %}&lt;&lt; Previous page{% endif %} |
+        {% if matches.has_next %}<a href="{{ url_for('search_bp.search', page=matches.next_num, search=search) }}">Next page &gt;&gt;</a>{% else %}Next page &gt;&gt;{% endif %}
+
     {% endif %}
 
 {% endblock %}
