@@ -2,14 +2,17 @@
 
 {% block styles %}
     {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='build/ableplayer.min.css') }}" type="text/css"/>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.5.6/plyr.css" />
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
-    <script src="{{ url_for('static', filename='thirdparty/js.cookie.js') }}"></script>
-    <script src="{{ url_for('static', filename='build/ableplayer.js') }}"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.plyr.io/3.5.6/plyr.js"></script>
+    <script>
+          document.addEventListener('DOMContentLoaded', () => {
+              const player = Plyr.setup('.js-player');
+          });
+    </script>
 {% endblock %}
 
 {% block app_content %}
@@ -50,9 +53,8 @@
     </div>
 
     <div id="player" class="footer">
-        <audio id="audio1" preload="auto" data-able-player data-skin="2020"
-               data-transcript-src="transcript" playsinline>
-            <source type="audio/mpeg" src="{{ episode.media }}"/>
+        <audio class="js-player">
+            <source src="{{ episode.media }}"/>
         </audio>
     </div>
 
