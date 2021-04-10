@@ -8,9 +8,6 @@
 {% block scripts %}
     {{ super() }}
     <script src="https://cdn.plyr.io/3.5.6/plyr.js"></script>
-    <script>
-    </script>
-
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
     <script type="text/javascript">
         $(function () {
@@ -28,7 +25,6 @@
     </script>
 
     <script>
-
         document.addEventListener('DOMContentLoaded', () => {
             const player = new Plyr(document.getElementById('js-player'));
             window.player = player;
@@ -85,31 +81,30 @@
     </form>
 
     {% if matches %}
-        <ul class="able-playlist" data-player="audio1">
-
-            <table class="styled-table">
+        <table class="styled-table">
+            <tr>
+                <th>Episode</th>
+                <th>Listen</th>
+                <th>Speaker</th>
+                <th>Timecode</th>
+                <th>Transcript</th>
+            </tr>
+            {% for match in matches.items %}
                 <tr>
-                    <th>Episode</th>
-                    <th>Listen</th>
-                    <th>Speaker</th>
-                    <th>Timecode</th>
-                    <th>Transcript</th>
+                    <td>
+                        <a href="{{ url_for('episode_bp.view', episodeId=match.id) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.id }}</a>
+                    </td>
+                    <td>
+                        <button class="player-src" data-src="{{ match.media }}#t={{ match.Transcript.timecode_secs }}"
+                                data-timecode="{{ match.Transcript.timecode_secs }}"
+                                data-episode="{{ match.id }}">{{ match.id }}</button>
+                    </td>
+                    <td>{{ match.Transcript.speaker }}</td>
+                    <td>{{ match.Transcript.timecode_secs }}</td>
+                    <td>{{ match.Transcript.transcript }}</td>
                 </tr>
-                {% for match in matches.items %}
-                    <tr>
-                        <td>
-                            <a href="{{ url_for('episode_bp.view', episodeId=match.id) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.id }}</a>
-                        </td>
-                        <td>
-                            <button class="player-src" data-src="{{ match.media }}#t={{ match.Transcript.timecode_secs }}" data-timecode="{{ match.Transcript.timecode_secs }}" data-episode="{{ match.id }}">{{ match.id }}</button>
-                        </td>
-                        <td>{{ match.Transcript.speaker }}</td>
-                        <td>{{ match.Transcript.timecode_secs }}</td>
-                        <td>{{ match.Transcript.transcript }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </ul>
+            {% endfor %}
+        </table>
 
         {% if matches.has_prev %}
             <a href="{{ url_for('search_bp.search', page=matches.prev_num, search=search) }}">&lt;&lt; Previous page</a>

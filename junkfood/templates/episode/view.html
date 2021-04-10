@@ -2,20 +2,60 @@
 
 {% block styles %}
     {{ super() }}
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.5.6/plyr.css" />
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.5.6/plyr.css"/>
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
     <script src="https://cdn.plyr.io/3.5.6/plyr.js"></script>
     <script>
-          document.addEventListener('DOMContentLoaded', () => {
-              const player = Plyr.setup('.js-player');
-          });
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = Plyr.setup('.js-player');
+        });
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = new Plyr(document.getElementById('js-player'));
+            window.player = player;
+
+            // Bind event listener
+            function on(selector, type, callback) {
+                document.querySelector(selector).addEventListener(type, callback, false);
+            }
+
+            $(document).ready(() => {
+
+                $('.player-src').on('click', function () {
+
+                    src = $(this).data("src");
+                    timecode = $(this).data("timecode");
+                    episode = $(this).data("episode");
+
+                    player.source = {
+                        type: 'audio',
+                        title: episode,
+                        sources: [
+                            {
+                                src: src,
+                                type: 'audio/mp3',
+                            }
+                        ],
+                    };
+                    player.play();
+                });
+            });
+        });
+    </script>
+
 {% endblock %}
 
 {% block app_content %}
+
+    <div id="player" class="footer">
+        <audio id="js-player">
+        </audio>
+    </div>
 
     <p>
         <b>Episode:</b> {{ episode.id }} ({{ episode.date }})<br/>
@@ -23,12 +63,10 @@
         <b>Listen:</b> <a href="{{ episode.media }}">mp3</a><br/>
     </p>
 
-    <div id="transcript" class="able-transcript-area height-override">
-        <div class="able-window-toolbar height-override"></div>
-        <div class="able-transcript height-override">
+    <div id="transcript">
+        <div>
 
             <table class="styled-table">
-
                 <tr>
                     <th>Timecode</th>
                     <th>Speaker</th>
@@ -37,25 +75,18 @@
 
                 {% for t in transcripts %}
                     <tr>
-                        <td><span class="able-transcript-seekpoint able-transcript-caption"
-                                  data-start="{{ t.timecode_secs }}"><a
-                                id="tc_{{ t.timecode_secs }}">{{ t.timecode }}</a></span></td>
+                        <td>
+                            <button class="player-src" data-src="{{ episode.media }}#t={{ t.timecode_secs }}" data-timecode="{{ t.timecode_secs }}" data-episode="{{ episode.id }}">{{ t.timecode }}</button>
+{#                            <a id="tc_{{ t.timecode_secs }}">{{ t.timecode }}#}
+                        </td>
                         <td>{{ t.speaker }}</td>
                         <td>
-                    <span class="able-transcript-seekpoint able-transcript-caption"
-                          data-start="{{ t.timecode_secs }}">{{ t.transcript }}</span>
+                            {{ t.transcript }}
                         </td>
                     </tr>
                 {% endfor %}
-
             </table>
         </div>
-    </div>
-
-    <div id="player" class="footer">
-        <audio class="js-player">
-            <source src="{{ episode.media }}"/>
-        </audio>
     </div>
 
 {% endblock %}
