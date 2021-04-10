@@ -3,14 +3,18 @@
 {% block styles %}
     {{ super() }}
     <link rel="stylesheet" href="https://cdn.plyr.io/3.5.6/plyr.css"/>
+    <style>
+
+    </style>
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
     <script src="https://cdn.plyr.io/3.5.6/plyr.js"></script>
+    <script src="{{ url_for('static', filename='mark/mark.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const player = Plyr.setup('.js-player');
+            const player = Plyr.setup('.js-player')
         });
     </script>
 
@@ -63,7 +67,7 @@
         <b>Listen:</b> <a href="{{ episode.media }}">mp3</a><br/>
     </p>
 
-    <div id="transcript">
+    <div class="transcript">
         <div>
 
             <table class="styled-table">
