@@ -36,15 +36,55 @@
 }
 
 .footer {
-   position: fixed;
-   left: 0;
-   bottom: 0;
-   width: 100%;
-   background-color: black;
-   color: white;
-   text-align: center;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: black;
+    color: white;
+    text-align: center;
 }
 
 .height-override {
     height: auto !important;
 }
+
+.transcript {
+    padding: 10px;
+    margin-bottom: 40px;
+    font-size: 15px;
+}
+
+.footer {
+    margin-top: 40px;
+}
+
+.play-btn {
+    width: 60%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.play-btn__svg {
+    transition: 1s;
+    fill: #7c7c7c;
+    opacity: .5;
+}
+
+.play-btn:hover .play-btn__svg {
+    fill: #a41d33;
+    opacity: 1;
+}
+
+.player-src {
+    display: inline-block;
+    border: none;
+    padding: 0;
+    margin: 0;
+    height: 45px;
+    width: 45px;
+    vertical-align: center;
+    background-color: Transparent;
+}
+
+.symbol { display: none; }
