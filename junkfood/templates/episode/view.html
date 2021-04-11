@@ -54,6 +54,13 @@
 {% endblock %}
 
 {% block app_content %}
+    <svg class="symbol ">
+        <symbol id="play-button" viewBox="0 0 26 26">
+            <polygon class="play-btn__svg" points="9.33 6.69 9.33 19.39 19.3 13.04 9.33 6.69"/>
+            <path class="play-btn__svg"
+                  d="M26,13A13,13,0,1,1,13,0,13,13,0,0,1,26,13ZM13,2.18A10.89,10.89,0,1,0,23.84,13.06,10.89,10.89,0,0,0,13,2.18Z"/>
+        </symbol>
+    </svg>
 
     <div id="player" class="footer">
         <audio id="js-player">
@@ -71,6 +78,7 @@
 
             <table class="styled-table">
                 <tr>
+                    <th>Listen</th>
                     <th>Timecode</th>
                     <th>Speaker</th>
                     <th>Transcript</th>
@@ -79,8 +87,19 @@
                 {% for t in transcripts %}
                     <tr>
                         <td>
-                            <button class="player-src" data-src="{{ episode.media }}#t={{ t.timecode_secs }}" data-timecode="{{ t.timecode_secs }}" data-episode="{{ episode.id }}">{{ t.timecode }}</button>
-{#                            <a id="tc_{{ t.timecode_secs }}">{{ t.timecode }}#}
+                            <button class="player-src"
+                                    data-src="{{ episode.media }}#t={{ t.timecode_secs }}"
+                                    data-timecode="{{ t.timecode_secs }}"
+                                    data-episode="{{ episode.id }}">
+                                <div class="play-btn">
+                                    <svg width="25" height="25">
+                                        <use xlink:href="#play-button"/>
+                                    </svg>
+                                </div>
+                            </button>
+                        </td>
+                        <td>
+                            {{ t.timecode }}
                         </td>
                         <td>{{ t.speaker }}</td>
                         <td>
