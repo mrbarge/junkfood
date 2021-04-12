@@ -5,5 +5,5 @@ base_bp = Blueprint('base_bp', __name__)
 
 
 @base_bp.route('/')
-def base():
+def home():
     return render_template('base/home.html')

@@ -1,9 +1,10 @@
-{% extends 'header.html' %}
+{% extends 'layout.html' %}
 
-{% block content %}
+{% block app_content %}
+
 <ul>
 <li><a href="{{ url_for('episode_bp.home') }}">Episodes</a></li>
 <li><a href="{{ url_for('search_bp.search') }}">Search</a></li>
 </ul>
-{%- endblock content %}
+{%- endblock app_content %}
 

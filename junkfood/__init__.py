@@ -3,12 +3,14 @@ import os
 from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from prometheus_flask_exporter import PrometheusMetrics
 
 # add DB
 db = SQLAlchemy()
 migrate = Migrate()
+login_manager = LoginManager()
 metrics = None
 
 
@@ -29,6 +31,8 @@ def create_app():
     from junkfood.models import Transcript
 
     db.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth_bp.login'
     migrate.init_app(app, db)
     bootstrap = Bootstrap(app)
 
@@ -36,11 +40,12 @@ def create_app():
         from junkfood.base import base_bp
         from junkfood.episode import episode_bp
         from junkfood.search import search_bp
+        from junkfood.auth import auth_bp
 
         # add blueprints
         app.register_blueprint(base_bp, url_prefix='/')
         app.register_blueprint(episode_bp, url_prefix='/episode')
         app.register_blueprint(search_bp, url_prefix='/search')
-
+        app.register_blueprint(auth_bp, url_prefix='/auth')
 
         return app

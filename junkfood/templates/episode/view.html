@@ -74,7 +74,7 @@
     </p>
 
     <div class="transcript">
-        <div>
+        <div id="tc_0">
 
             <table class="styled-table">
                 <tr>
@@ -87,6 +87,7 @@
                 {% for t in transcripts %}
                     <tr>
                         <td>
+                            <div id="tc_{{ t.timecode_secs }}">
                             <button class="player-src"
                                     data-src="{{ episode.media }}#t={{ t.timecode_secs }}"
                                     data-timecode="{{ t.timecode_secs }}"
@@ -97,6 +98,7 @@
                                     </svg>
                                 </div>
                             </button>
+                            </div>
                         </td>
                         <td>
                             {{ t.timecode }}
