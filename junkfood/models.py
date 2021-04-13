@@ -30,8 +30,18 @@ class RoleAssociation(db.Model):
     role_id = Column('role_id', Integer, ForeignKey('roles.id'), primary_key=True)
 
 
+class StarredTranscripts(db.Model):
+    __tablename__ = 'user_starred'
+    user_id = Column('user_id', Integer, ForeignKey('users.id'), primary_key=True)
+    role_id = Column('transcript_id', Integer, ForeignKey('transcripts.id'), primary_key=True)
+
+
 class Role(db.Model):
     __tablename__ = 'roles'
+
+    ADMINISTRATOR = 'Administrator'
+    MODERATOR = 'Moderator'
+    PREMIUM = 'Premium'
 
     id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.Unicode(16), nullable=False, unique=True)
@@ -47,6 +57,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.Unicode(40), unique=True, nullable=False)
     password = db.Column(db.String(200), primary_key=False, unique=False, nullable=False)
     roles = relationship('RoleAssociation')
+    starred = relationship('StarredTranscripts')
 
     def set_password(self, password):
         if not password:

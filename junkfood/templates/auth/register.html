@@ -4,7 +4,7 @@
 
   <div class="form-wrapper">
 
-    <h1>Log In</h1>
+    <h1>Register</h1>
 
     <form method="POST" action="">
       {{ form.csrf_token }}
@@ -38,6 +38,9 @@
       <p>
       <div class="submit-button">
         {{ form.submit }}
+      </div>
+      <div class="forgot-button">
+        {{ form.forgot }}
       </div>
       </p>
 

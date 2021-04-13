@@ -1,7 +1,8 @@
-from junkfood.auth.forms import LoginForm
-from junkfood.models import User
+from junkfood.auth.forms import LoginForm, RegisterForm
+from junkfood.models import User, Role, RoleAssociation
 from flask import Blueprint, redirect, url_for, request, flash, render_template
 from flask_login import login_required, logout_user, current_user, login_user, login_manager
+from junkfood.models import db
 
 # Blueprint Configuration
 auth_bp = Blueprint(
@@ -27,8 +28,34 @@ def login():
     return render_template('auth/login.html', form=form)
 
 
+@auth_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('base_bp.home'))
+
+    form = RegisterForm()
+    if form.validate_on_submit():
+        user_exists = User.query.filter_by(email=form.email.data).first()
+        if user_exists:
+            flash('User already exists.')
+            return redirect(url_for('auth_bp.register'))
+
+        newuser = User(email=form.email.data)
+        newuser.set_password(form.password.data)
+        db.session.add(newuser)
+
+        role = Role.query.filter_by(role=Role.PREMIUM).first()
+        user_role = RoleAssociation(user_id=newuser.id, role_id=role.id)
+        db.session.add(user_role)
+        db.session.commit()
+
+        login_user(newuser)
+        return redirect(url_for('base_bp.home'))
+    return render_template('auth/register.html', form=form)
+
+
 @auth_bp.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('auth_bp.login'))
+    return redirect(url_for('base_bp.home'))
