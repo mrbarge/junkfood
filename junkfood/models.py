@@ -33,7 +33,7 @@ class RoleAssociation(db.Model):
 class StarredTranscripts(db.Model):
     __tablename__ = 'user_starred'
     user_id = Column('user_id', Integer, ForeignKey('users.id'), primary_key=True)
-    role_id = Column('transcript_id', Integer, ForeignKey('transcripts.id'), primary_key=True)
+    transcript_id = Column('transcript_id', Integer, ForeignKey('transcripts.id'), primary_key=True)
 
 
 class Role(db.Model):
@@ -169,17 +169,36 @@ def get_all_episode_ids(has_transcript=True):
         raise Exception()
 
 
-def get_transcripts(episode):
+def get_transcripts(episode_id):
     '''
     Retrieve a transcript for the given episode
     :return: Transcript
     '''
     try:
-        all_transcripts = Transcript.query.filter(Transcript.episode == episode).order_by(Transcript.index)
+        all_transcripts = Transcript.query.filter(Transcript.episode == episode_id).order_by(Transcript.index)
     except sqlalchemy.exc.SQLAlchemyError:
         raise Exception()
 
     return all_transcripts
+
+
+def get_stars(user_id, episode_id):
+    '''
+    Retrieve user-starred transcripts for the given episode
+    :param user_id: ID of user
+    :param episode_id: ID of episode
+    :return:
+    '''
+    try:
+        all_transcripts = Transcript.query.filter(Transcript.episode == episode_id).order_by(Transcript.index)
+        transcript_ids = [x.id for x in all_transcripts]
+        episode_stars = StarredTranscripts.query.filter(StarredTranscripts.user_id == user_id,
+                                                        StarredTranscripts.transcript_id.in_(transcript_ids))
+        results = [row.transcript_id for row in episode_stars]
+        return results
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise Exception()
+    return []
 
 
 def get_speakers():

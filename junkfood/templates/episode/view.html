@@ -82,6 +82,7 @@
                     <th>Timecode</th>
                     <th>Speaker</th>
                     <th>Transcript</th>
+                    <th> </th>
                 </tr>
 
                 {% for t in transcripts %}
@@ -106,6 +107,13 @@
                         <td>{{ t.speaker }}</td>
                         <td>
                             {{ t.transcript }}
+                        </td>
+                        <td>
+                            {% if t.id in stars %}
+                                <img src="{{ url_for('static', filename='/img/starred.svg') }}"/>
+                            {% else %}
+                                <img src="{{ url_for('static', filename='/img/add-star.svg') }}"/>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
