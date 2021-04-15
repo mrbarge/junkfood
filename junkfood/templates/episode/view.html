@@ -82,7 +82,9 @@
                     <th>Timecode</th>
                     <th>Speaker</th>
                     <th>Transcript</th>
+                    {% if current_user.is_authenticated %}
                     <th> </th>
+                    {% endif %}
                 </tr>
 
                 {% for t in transcripts %}
@@ -108,13 +110,15 @@
                         <td>
                             {{ t.transcript }}
                         </td>
+                        {% if current_user.is_authenticated %}
                         <td>
                             {% if t.id in stars %}
-                                <img src="{{ url_for('static', filename='/img/starred.svg') }}"/>
+                                <a href="{{ url_for('like_bp.unlike', transcript_id=t.id) }}"><img src="{{ url_for('static', filename='/img/starred.svg') }}"/></a>
                             {% else %}
-                                <img src="{{ url_for('static', filename='/img/add-star.svg') }}"/>
+                                <a href="{{ url_for('like_bp.like', transcript_id=t.id) }}"><img src="{{ url_for('static', filename='/img/add-star.svg') }}"/></a>
                             {% endif %}
                         </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </table>

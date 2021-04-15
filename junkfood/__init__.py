@@ -41,11 +41,13 @@ def create_app():
         from junkfood.episode import episode_bp
         from junkfood.search import search_bp
         from junkfood.auth import auth_bp
+        from junkfood.like import like_bp
 
         # add blueprints
         app.register_blueprint(base_bp, url_prefix='/')
         app.register_blueprint(episode_bp, url_prefix='/episode')
         app.register_blueprint(search_bp, url_prefix='/search')
         app.register_blueprint(auth_bp, url_prefix='/auth')
+        app.register_blueprint(like_bp, url_prefix='/favourites')
 
         return app

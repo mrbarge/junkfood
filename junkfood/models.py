@@ -261,3 +261,23 @@ def searchFields(transcript, episode, speaker):
         raise Exception()
 
     return matches
+
+
+def like_transcript(user_id, transcript_id):
+    try:
+        user_star = StarredTranscripts(user_id=user_id, transcript_id=transcript_id)
+        db.session.add(user_star)
+        db.session.commit()
+    except sqlalchemy.exc.SQLAlchemyError as e:
+        raise Exception(e)
+
+    return user_star
+
+
+def unlike_transcript(user_id, transcript_id):
+    try:
+        StarredTranscripts.query.filter(StarredTranscripts.user_id == user_id,
+                                        StarredTranscripts.transcript_id == transcript_id).delete()
+        db.session.commit()
+    except sqlalchemy.exc.SQLAlchemyError as e:
+        raise Exception(e)
