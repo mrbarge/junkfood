@@ -1,0 +1,99 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.5.6/plyr.css"/>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='mark/mark.js') }}"></script>
+    <script src="https://cdn.plyr.io/3.5.6/plyr.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const player = new Plyr(document.getElementById('js-player'));
+            window.player = player;
+
+            // Bind event listener
+            function on(selector, type, callback) {
+                document.querySelector(selector).addEventListener(type, callback, false);
+            }
+
+            $(document).ready(() => {
+
+                $('.player-src').on('click', function () {
+
+                    src = $(this).data("src");
+                    timecode = $(this).data("timecode");
+                    episode = $(this).data("episode");
+
+                    player.source = {
+                        type: 'audio',
+                        title: episode,
+                        sources: [
+                            {
+                                src: src,
+                                type: 'audio/mp3',
+                            }
+                        ],
+                    };
+                    player.play();
+                });
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block app_content %}
+    <svg class="symbol ">
+        <symbol id="play-button" viewBox="0 0 26 26">
+            <polygon class="play-btn__svg" points="9.33 6.69 9.33 19.39 19.3 13.04 9.33 6.69"/>
+            <path class="play-btn__svg"
+                  d="M26,13A13,13,0,1,1,13,0,13,13,0,0,1,26,13ZM13,2.18A10.89,10.89,0,1,0,23.84,13.06,10.89,10.89,0,0,0,13,2.18Z"/>
+        </symbol>
+    </svg>
+
+    <div id="player" class="footer">
+        <audio id="js-player">
+        </audio>
+    </div>
+
+    {% if matches %}
+        <div class="transcript">
+            <table class="styled-table">
+                <tr>
+                    <th>Episode</th>
+                    <th>Listen</th>
+                    <th>Speaker</th>
+                    <th>Timecode</th>
+                    <th>Transcript</th>
+                </tr>
+                {% for match in matches %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('episode_bp.view', episodeId=match.id) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.id }}</a>
+                        </td>
+                        <td>
+                            <button class="player-src"
+                                    data-src="{{ match.media }}#t={{ match.Transcript.timecode_secs }}"
+                                    data-timecode="{{ match.Transcript.timecode_secs }}"
+                                    data-episode="{{ match.id }}">
+                                <div class="play-btn">
+                                    <svg width="25" height="25">
+                                        <use xlink:href="#play-button"/>
+                                    </svg>
+                                </div>
+                            </button>
+                        </td>
+                        <td>{{ match.Transcript.speaker }}</td>
+                        <td>{{ match.Transcript.timecode }}</td>
+                        <td>{{ match.Transcript.transcript }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+
+{% endblock %}

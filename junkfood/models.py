@@ -1,7 +1,7 @@
 from flask_login import UserMixin
 from sqlalchemy import Index, distinct, func, desc, Table, Column, ForeignKey, Integer
 from sqlalchemy.sql.expression import func as sqlfunc
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import relationship, sessionmaker, load_only
 from sqlalchemy.ext.declarative import declarative_base
 import sqlalchemy
 import random
@@ -34,6 +34,12 @@ class StarredTranscripts(db.Model):
     __tablename__ = 'user_starred'
     user_id = Column('user_id', Integer, ForeignKey('users.id'), primary_key=True)
     transcript_id = Column('transcript_id', Integer, ForeignKey('transcripts.id'), primary_key=True)
+
+
+class Classics(db.Model):
+    __tablename__ = 'classics'
+    transcript_id = Column('transcript_id', Integer, ForeignKey('transcripts.id'), primary_key=True)
+    description = Column('description', db.Text)
 
 
 class Role(db.Model):
@@ -75,10 +81,11 @@ class Episode(db.Model):
     __tablename__ = 'episodes'
 
     id = db.Column(db.Integer, primary_key=True)
+    number = db.Column(db.String(64))
     date = db.Column(db.Date)
-    homepage = db.Column(db.String(255))
-    media = db.Column(db.String(255))
-    podcast = db.Column(db.String(16))
+    homepage = db.Column(db.Unicode(255))
+    media = db.Column(db.Unicode(255))
+    podcast = db.Column(db.Unicode(16))
     premium = db.Column(db.Boolean)
     archive = db.Column(db.Boolean)
 
@@ -91,7 +98,7 @@ class Transcript(db.Model):
     episode = db.Column(db.Integer,
                         db.ForeignKey('episodes.id'),
                         )
-    speaker = db.Column(db.String(15))
+    speaker = db.Column(db.Unicode(15))
     timecode = db.Column(db.String(8))
     timecode_secs = db.Column(db.Integer)
     transcript = db.Column(db.Text)
@@ -281,3 +288,46 @@ def unlike_transcript(user_id, transcript_id):
         db.session.commit()
     except sqlalchemy.exc.SQLAlchemyError as e:
         raise Exception(e)
+
+
+def my_likes(user_id):
+    try:
+        likes = StarredTranscripts.query.filter(StarredTranscripts.user_id == user_id)
+        like_transcripts = [x.transcript_id for x in likes]
+        transcripts = Transcript.query.join(Episode).add_columns(Episode.date, Episode.id, Episode.media).filter(
+            Transcript.id.in_(like_transcripts)).all()
+        return transcripts
+    except sqlalchemy.exc.SQLAlchemyError as e:
+        raise Exception(e)
+    return []
+
+
+def top_likes():
+    try:
+        top_likes = StarredTranscripts.query.with_entities(StarredTranscripts.transcript_id,
+                                                           func.count(StarredTranscripts.transcript_id).label(
+                                                               'count')).group_by(
+            StarredTranscripts.transcript_id).order_by(desc('count')).limit(20).all()
+        like_transcripts = [x.transcript_id for x in top_likes]
+        transcripts = Transcript.query.join(Episode).add_columns(Episode.date, Episode.id, Episode.media).filter(
+            Transcript.id.in_(like_transcripts)).all()
+        return transcripts
+    except sqlalchemy.exc.SQLAlchemyError as e:
+        raise Exception(e)
+    return []
+
+
+def classics():
+    try:
+        classics = Classics.query.filter().all()
+        classic_lookup = {}
+        for c in classics:
+            classic_lookup[c.transcript_id] = c.description
+        transcripts = Transcript.query.join(Episode).add_columns(Classics.description, Episode.date, Episode.id,
+                                                                 Episode.media).filter(
+            Transcript.id.in_(classic_lookup.keys()),
+            Classics.transcript_id == Transcript.id).all()
+        return transcripts
+    except sqlalchemy.exc.SQLAlchemyError as e:
+        raise Exception(e)
+    return []

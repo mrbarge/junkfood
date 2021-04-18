@@ -21,6 +21,18 @@
                             <li><a href="{{ url_for('episode_bp.random') }}">Random episode</a></li>
                         </ul>
                     </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Highlights <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            {% if current_user.is_anonymous %}
+                            <li>View my favorites</li>
+                            {% else %}
+                            <li><a href="{{ url_for('like_bp.my_likes') }}">View my favorites</a></li>
+                            {% endif %}
+                            <li><a href="{{ url_for('like_bp.all_time') }}">View top user favorites</a></li>
+                            <li><a href="{{ url_for('like_bp.classics') }}">Classic moments</a></li>
+                        </ul>
+                    </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_anonymous %}
