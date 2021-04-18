@@ -26,7 +26,7 @@
       <fieldset class="password">
         {{ form.password.label }}<br>
         {{ form.password }}
-        {% if form.email.errors %}
+        {% if form.password.errors %}
           <ul class="errors">
             {% for error in form.password.errors %}
               <li>{{ error }}</li>{% endfor %}
@@ -38,9 +38,6 @@
       <p>
       <div class="submit-button">
         {{ form.submit }}
-      </div>
-      <div class="forgot-button">
-        {{ form.forgot }}
       </div>
       </p>
 

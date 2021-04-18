@@ -1,4 +1,4 @@
-from junkfood.auth.forms import LoginForm, RegisterForm
+from junkfood.auth.forms import LoginForm, RegisterForm, ResetPasswordForm, SetPasswordForm
 from junkfood.models import User, Role, RoleAssociation
 from flask import Blueprint, redirect, url_for, request, flash, render_template, current_app
 from flask_login import login_required, logout_user, current_user, login_user, login_manager
@@ -101,3 +101,48 @@ def confirm_email(token):
     db.session.commit()
     flash(f'User account for email address "{email}" confirmed, you may now log in.')
     return redirect(url_for('auth_bp.login'))
+
+
+@auth_bp.route('/reset', methods=["GET", "POST"])
+def reset():
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first_or_404()
+
+        subject = "Password reset requested"
+
+        token = ts.dumps(form.email.data, salt='recover-key')
+
+        recover_url = url_for(
+            'auth_bp.reset_with_token',
+            token=token,
+            _external=True)
+
+        html = render_template(
+            'auth/recover.html',
+            recover_url=recover_url)
+
+        print(html)
+        flash('Please check your email for a password reset link.')
+        return redirect(url_for('base_bp.home'))
+    return render_template('auth/reset.html', form=form)
+
+
+@auth_bp.route('/reset/<token>', methods=["GET", "POST"])
+def reset_with_token(token):
+    try:
+        email = ts.loads(token, salt="recover-key", max_age=86400)
+    except:
+        flash('Token is not valid or has expired.')
+        return redirect(url_for('auth_bp.reset'))
+
+    form = SetPasswordForm()
+
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=email).first_or_404()
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('Password has been reset, you may now login.')
+        return redirect(url_for('auth_bp.login'))
+
+    return render_template('auth/reset_with_token.html', form=form, token=token)

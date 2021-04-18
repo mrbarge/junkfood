@@ -4,7 +4,7 @@
 
     <div class="form-wrapper">
 
-        <h1>Log In</h1>
+        <h1>Reset Password</h1>
 
         <form method="POST" action="">
             {{ form.csrf_token }}
@@ -23,26 +23,11 @@
             </p>
 
             <p>
-            <fieldset class="password">
-                {{ form.password.label }}<br>
-                {{ form.password }}
-                {% if form.password.errors %}
-                    <ul class="errors">
-                        {% for error in form.password.errors %}
-                            <li>{{ error }}</li>{% endfor %}
-                    </ul>
-                {% endif %}
-            </fieldset>
-            </p>
-
-            <p>
             <div class="submit-button">
                 {{ form.submit }}
             </div>
             </p>
-            <p>
-                <a href="{{ url_for('auth_bp.reset') }}">Forgot Password..</a>
-            </p>
+
         </form>
     </div>
 
