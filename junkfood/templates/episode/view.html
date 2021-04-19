@@ -3,6 +3,7 @@
 {% block styles %}
     {{ super() }}
     <link rel="stylesheet" href="https://cdn.plyr.io/3.5.6/plyr.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
 
     </style>
@@ -16,6 +17,31 @@
         document.addEventListener('DOMContentLoaded', () => {
             const player = Plyr.setup('.js-player')
         });
+    </script>
+    <script>
+    $( document ).ready(function() {
+        $('.like-form').submit(function (e) {
+            e.preventDefault()
+            const transcript_id = $(this).attr('id')
+            const likeText = $(".like-btn" + transcript_id).find("i").hasClass("fa-heart-o") ? "Unlike" : "Like"
+            const trim = $.trim(likeText)
+            const url = $(this).attr('action')
+            $.ajax({
+                type: 'GET',
+                url: url,
+                success: function (response) {
+                    if (trim === 'Unlike') {
+                        $(`.like-btn${transcript_id}`).html('<i class="fa fa-heart" aria-hidden="true"></i>')
+                    } else {
+                        $(`.like-btn${transcript_id}`).html('<i class="fa fa-heart-o" aria-hidden="true"></i>')
+                    }
+                },
+                error: function (response) {
+                    console.log('error', response)
+                }
+            })
+        });
+    });
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -83,7 +109,7 @@
                     <th>Speaker</th>
                     <th>Transcript</th>
                     {% if current_user.is_authenticated %}
-                    <th> </th>
+                        <th></th>
                     {% endif %}
                 </tr>
 
@@ -91,16 +117,16 @@
                     <tr>
                         <td>
                             <div id="tc_{{ t.timecode_secs }}">
-                            <button class="player-src"
-                                    data-src="{{ episode.media }}#t={{ t.timecode_secs }}"
-                                    data-timecode="{{ t.timecode_secs }}"
-                                    data-episode="{{ episode.id }}">
-                                <div class="play-btn">
-                                    <svg width="25" height="25">
-                                        <use xlink:href="#play-button"/>
-                                    </svg>
-                                </div>
-                            </button>
+                                <button class="player-src"
+                                        data-src="{{ episode.media }}#t={{ t.timecode_secs }}"
+                                        data-timecode="{{ t.timecode_secs }}"
+                                        data-episode="{{ episode.id }}">
+                                    <div class="play-btn">
+                                        <svg width="25" height="25">
+                                            <use xlink:href="#play-button"/>
+                                        </svg>
+                                    </div>
+                                </button>
                             </div>
                         </td>
                         <td>
@@ -111,13 +137,25 @@
                             {{ t.transcript }}
                         </td>
                         {% if current_user.is_authenticated %}
-                        <td>
-                            {% if t.id in stars %}
-                                <a href="{{ url_for('like_bp.unlike', transcript_id=t.id) }}"><img src="{{ url_for('static', filename='/img/starred.svg') }}"/></a>
-                            {% else %}
-                                <a href="{{ url_for('like_bp.like', transcript_id=t.id) }}"><img src="{{ url_for('static', filename='/img/add-star.svg') }}"/></a>
-                            {% endif %}
-                        </td>
+                            <td>
+                                {% if t.id in stars %}
+                                    <form action="{{ url_for('like_bp.unlike', transcript_id=t.id) }}" method="POST" class='like-form' id="{{ t.id }}">
+                                        <input type="hidden" name="post_id" value=1>
+                                        <button type="submit"
+                                                class="btn btn-link g-color-gray-dark-v5 g-color-red--hover text-red p-0 border-0 btn-outline-light like-btn{{ t.id }}">
+                                            <i class="fa fa-heart" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <form action="{{ url_for('like_bp.like', transcript_id=t.id) }}" method="POST" class='like-form' id="{{ t.id }}">
+                                        <input type="hidden" name="post_id" value=1>
+                                        <button type="submit"
+                                                class="btn btn-link g-color-gray-dark-v5 g-color-red--hover text-red p-0 border-0 btn-outline-light like-btn{{ t.id }}">
+                                            <i class="fa fa-heart-o" aria-hidden="true"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </td>
                         {% endif %}
                     </tr>
                 {% endfor %}
