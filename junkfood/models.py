@@ -1,5 +1,5 @@
 from flask_login import UserMixin
-from sqlalchemy import Index, distinct, func, desc, Table, Column, ForeignKey, Integer
+from sqlalchemy import Index, distinct, func, desc, Table, Column, ForeignKey, Integer, ForeignKeyConstraint
 from sqlalchemy.sql.expression import func as sqlfunc
 from sqlalchemy.orm import relationship, sessionmaker, load_only
 from sqlalchemy.ext.declarative import declarative_base
@@ -20,8 +20,7 @@ def load_user(user_id):
 
 
 Base = declarative_base()
-role_association_table = Table('user_roles', Base.metadata,
-                               )
+role_association_table = Table('user_roles', Base.metadata)
 
 
 class RoleAssociation(db.Model):
@@ -40,6 +39,20 @@ class Classics(db.Model):
     __tablename__ = 'classics'
     transcript_id = Column('transcript_id', Integer, ForeignKey('transcripts.id'), primary_key=True)
     description = Column('description', db.Text)
+
+
+class Terms(db.Model):
+    __tablename__ = 'terms'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    term = Column('term', db.Text)
+    label = Column('label', db.String(20))
+
+
+class TermFrequency(db.Model):
+    __tablename__ = 'termfreq'
+    term_id = Column('term_id', Integer, ForeignKey('terms.id'), primary_key=True, autoincrement=False)
+    episode_id = Column('episode_id', Integer, ForeignKey('episodes.id'), primary_key=True, autoincrement=False)
+    freq = Column('freq', db.Integer)
 
 
 class Role(db.Model):
@@ -106,30 +119,6 @@ class Transcript(db.Model):
 
     def __repr__(self):
         return '<Transcript {}>'.format(self.id)
-
-
-class Movies(db.Model):
-    __tablename__ = 'movies'
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100))
-    imdb_id = db.Column(db.String(15))
-    release_date = db.Column(db.String(10))
-
-
-class TranscriptMovies(db.Model):
-    __tablename__ = 'transcript_movies'
-
-    transcript_id = db.Column(
-        db.Integer,
-        db.ForeignKey('transcripts.id'),
-        primary_key=True
-    )
-    movie_id = db.Column(
-        db.Integer,
-        db.ForeignKey('movies.id'),
-        primary_key=True
-    )
 
 
 def get_random_episode():
@@ -253,6 +242,49 @@ def search(query, page, items_per_page):
     matches = match_query.order_by(Transcript.episode).order_by(Transcript.timecode_secs).paginate(page, items_per_page,
                                                                                                    False)
     return matches
+
+
+def get_terms_for_episode(episode_id):
+    '''
+    Retrieves all detected terms for an episode
+    :return: Transcript
+    '''
+    try:
+        all_terms = TermFrequency.query.join(Terms).add_columns(Terms.id, Terms.term, Terms.label).filter(TermFrequency.episode_id == episode_id).order_by(TermFrequency.freq.desc()).limit(20)
+        terms = []
+        for term in all_terms:
+            terms.append({
+                'id': term[1],
+                'term': term[2],
+                'label': term[3],
+                'freq': term[0].freq
+            })
+        return terms
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise Exception()
+
+    return all_transcripts
+
+
+def get_episodes_for_term(term_id):
+    '''
+    Retrieves all detected terms for an episode
+    :return: Transcript
+    '''
+    try:
+        term = Terms.query.filter(Terms.id == term_id).first()
+        all_episodes = TermFrequency.query.filter(TermFrequency.term_id == term_id).order_by(TermFrequency.freq.desc()).limit(20)
+        terms = []
+        for ep in all_episodes:
+            terms.append({
+                'episode_id': ep.episode_id,
+                'freq': ep.freq,
+            })
+        return terms
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise Exception()
+
+    return all_transcripts
 
 
 def searchFields(transcript, episode, speaker):

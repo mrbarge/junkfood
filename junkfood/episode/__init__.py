@@ -16,10 +16,11 @@ def home():
 def view(episodeId, timecode):
     episode = models.get_episode(episodeId)
     transcripts = models.get_transcripts(episodeId)
+    terms = models.get_terms_for_episode(episodeId)
     transcript_stars = []
     if current_user.is_authenticated:
         transcript_stars = models.get_stars(current_user.id, episode.id)
-    return render_template('episode/view.html', episode=episode, transcripts=transcripts, timecode=timecode, stars=transcript_stars)
+    return render_template('episode/view.html', episode=episode, transcripts=transcripts, timecode=timecode, stars=transcript_stars, terms=terms)
 
 
 @episode_bp.route('/random', methods=['GET'])
