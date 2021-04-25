@@ -1,14 +1,12 @@
 from flask_login import UserMixin
-from sqlalchemy import Index, distinct, func, desc, Table, Column, ForeignKey, Integer, ForeignKeyConstraint
+from sqlalchemy import func, desc, Table, Column, ForeignKey, Integer
 from sqlalchemy.sql.expression import func as sqlfunc
-from sqlalchemy.orm import relationship, sessionmaker, load_only
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import sqlalchemy
-import random
 
 from . import db, searchquery
 from junkfood import login_manager
-from sqlalchemy.dialects.postgresql import JSON
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -262,8 +260,7 @@ def get_terms_for_episode(episode_id):
         return terms
     except sqlalchemy.exc.SQLAlchemyError:
         raise Exception()
-
-    return all_transcripts
+    return []
 
 
 def get_episodes_for_term(term_id):
@@ -283,8 +280,25 @@ def get_episodes_for_term(term_id):
         return terms
     except sqlalchemy.exc.SQLAlchemyError:
         raise Exception()
+    return []
 
-    return all_transcripts
+
+def top_terms(limit):
+    '''
+    Retrieves all detected terms for an episode
+    :return: Transcript
+    '''
+    try:
+        all_terms = TermFrequency.query.with_entities(TermFrequency.term_id,
+                                                      func.count(TermFrequency.freq).label('freq')).group_by(TermFrequency.term_id).order_by(desc('freq')).limit(limit)
+        terms = []
+        for t in all_terms:
+            term = Terms.query.filter(Terms.id == t[0]).first()
+            terms.append(term)
+        return terms
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise Exception()
+    return []
 
 
 def searchFields(transcript, episode, speaker):

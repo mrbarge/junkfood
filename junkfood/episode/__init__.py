@@ -1,4 +1,4 @@
-from flask import redirect, url_for, Blueprint, render_template
+from flask import Blueprint, render_template
 from flask_login import current_user
 from junkfood import models
 

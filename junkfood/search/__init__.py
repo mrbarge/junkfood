@@ -1,5 +1,5 @@
 import json
-from flask import redirect, url_for, Blueprint, render_template, request, Response, current_app, session
+from flask import redirect, url_for, Blueprint, render_template, request, Response, current_app
 from junkfood.search.forms import SearchForm
 from junkfood import models
 

@@ -1,6 +1,5 @@
 from flask import redirect, url_for, Blueprint, render_template, jsonify, flash
 from flask_login import current_user
-from junkfood.models import StarredTranscripts
 from junkfood import models, db
 
 like_bp = Blueprint('like_bp', __name__)

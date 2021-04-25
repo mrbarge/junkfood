@@ -102,7 +102,7 @@
     <div class="terms">
         <b>Discussed: </b>
         {% for t in terms %}
-            {{ t.term }},
+            <a href="{{ url_for('terms_bp.view', termId=t.id) }}">{{ t.term }}</a>,
         {% endfor %}
     </div>
     <div class="transcript">

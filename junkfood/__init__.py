@@ -5,7 +5,6 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
-from prometheus_flask_exporter import PrometheusMetrics
 
 # add DB
 db = SQLAlchemy()
@@ -42,6 +41,7 @@ def create_app():
         from junkfood.search import search_bp
         from junkfood.auth import auth_bp
         from junkfood.like import like_bp
+        from junkfood.terms import term_bp
 
         # add blueprints
         app.register_blueprint(base_bp, url_prefix='/')
@@ -49,5 +49,6 @@ def create_app():
         app.register_blueprint(search_bp, url_prefix='/search')
         app.register_blueprint(auth_bp, url_prefix='/auth')
         app.register_blueprint(like_bp, url_prefix='/favourites')
+        app.register_blueprint(term_bp, url_prefix='/terms')
 
         return app
