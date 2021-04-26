@@ -42,6 +42,7 @@ def create_app():
         from junkfood.auth import auth_bp
         from junkfood.like import like_bp
         from junkfood.terms import term_bp
+        from junkfood.error import error_bp
 
         # add blueprints
         app.register_blueprint(base_bp, url_prefix='/')
@@ -50,5 +51,6 @@ def create_app():
         app.register_blueprint(auth_bp, url_prefix='/auth')
         app.register_blueprint(like_bp, url_prefix='/favourites')
         app.register_blueprint(term_bp, url_prefix='/terms')
+        app.register_blueprint(error_bp, url_prefix='/error')
 
         return app

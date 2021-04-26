@@ -215,7 +215,7 @@ def get_speakers():
     return speakers
 
 
-def search(query, page, items_per_page):
+def search(query, page, items_per_page, limit):
     '''
     Retrieve episodes matching query
     :param query:
@@ -237,18 +237,20 @@ def search(query, page, items_per_page):
     if searchquery.UNTIL_KEY in parsed_query:
         match_query = match_query.filter(Episode.date <= parsed_query[searchquery.UNTIL_KEY][0])
 
-    matches = match_query.order_by(Transcript.episode).order_by(Transcript.timecode_secs).paginate(page, items_per_page,
+    matches = match_query.order_by(Transcript.episode).order_by(Transcript.timecode_secs).limit(limit).from_self().paginate(page,
+                                                                                                   items_per_page,
                                                                                                    False)
     return matches
 
 
-def get_terms_for_episode(episode_id):
+def get_terms_for_episode(episode_id, limit):
     '''
     Retrieves all detected terms for an episode
     :return: Transcript
     '''
     try:
-        all_terms = TermFrequency.query.join(Terms).add_columns(Terms.id, Terms.term, Terms.label).filter(TermFrequency.episode_id == episode_id).order_by(TermFrequency.freq.desc()).limit(20)
+        all_terms = TermFrequency.query.join(Terms).add_columns(Terms.id, Terms.term, Terms.label).filter(
+            TermFrequency.episode_id == episode_id).order_by(TermFrequency.freq.desc()).limit(limit)
         terms = []
         for term in all_terms:
             terms.append({
@@ -270,7 +272,8 @@ def get_episodes_for_term(term_id):
     '''
     try:
         term = Terms.query.filter(Terms.id == term_id).first()
-        all_episodes = TermFrequency.query.filter(TermFrequency.term_id == term_id).order_by(TermFrequency.freq.desc()).limit(20)
+        all_episodes = TermFrequency.query.filter(TermFrequency.term_id == term_id).order_by(
+            TermFrequency.freq.desc()).limit(20)
         terms = []
         for ep in all_episodes:
             terms.append({
@@ -290,7 +293,8 @@ def top_terms(limit):
     '''
     try:
         all_terms = TermFrequency.query.with_entities(TermFrequency.term_id,
-                                                      func.count(TermFrequency.freq).label('freq')).group_by(TermFrequency.term_id).order_by(desc('freq')).limit(limit)
+                                                      func.count(TermFrequency.freq).label('freq')).group_by(
+            TermFrequency.term_id).order_by(desc('freq')).limit(limit)
         terms = []
         for t in all_terms:
             term = Terms.query.filter(Terms.id == t[0]).first()

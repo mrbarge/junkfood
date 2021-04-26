@@ -36,7 +36,7 @@ def search(page=None, search=None):
             return redirect(url_for('search_bp.search', page=page, search=search))
 
     if page is not None and search is not None:
-        matches = models.search(search, page, current_app.config['ITEMS_PER_PAGE'])
+        matches = models.search(search, page, current_app.config['ITEMS_PER_PAGE'], current_app.config['MAX_SEARCH_RESULTS'])
         return render_template('search/search.html', form=search_form, matches=matches, search=search)
 
     return render_template('search/search.html', form=search_form, matches=matches)

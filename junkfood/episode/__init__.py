@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, abort
 from flask_login import current_user
 from junkfood import models
 
@@ -16,7 +16,7 @@ def home():
 def view(episodeId, timecode):
     episode = models.get_episode(episodeId)
     transcripts = models.get_transcripts(episodeId)
-    terms = models.get_terms_for_episode(episodeId)
+    terms = models.get_terms_for_episode(episodeId, current_app.config['TERMS_PER_EPISODE'])
     transcript_stars = []
     if current_user.is_authenticated:
         transcript_stars = models.get_stars(current_user.id, episode.id)
@@ -27,5 +27,3 @@ def view(episodeId, timecode):
 def random():
     episode = models.get_random_episode()
     return view(episode.id, 0)
-    # transcripts = models.get_transcripts(episode.id)
-    # return render_template('episode/view.html', episode=episode, transcripts=transcripts)

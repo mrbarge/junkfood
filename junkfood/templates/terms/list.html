@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}
+
+{% block app_content %}
+<b>Top terms discussed</b>
+<ul>
+{% for t in terms %}
+    <li><a href="{{ url_for('terms_bp.view', termId=t.id) }}">{{ t.term }}</a></li>
+{% endfor %}
+</ul>
+
+{% endblock %}
