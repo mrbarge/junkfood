@@ -2,13 +2,13 @@
 
 {% block styles %}
     {{ super() }}
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.5.6/plyr.css"/>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.6.7/plyr.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
-    <script src="https://cdn.plyr.io/3.5.6/plyr.js"></script>
+    <script src="https://cdn.plyr.io/3.6.7/plyr.polyfilled.js"></script>
     <script src="{{ url_for('static', filename='mark/mark.js') }}"></script>
     <script src="{{ url_for('static', filename='js/like.js') }}"></script>
     <script src="{{ url_for('static', filename='js/setup-plyr.js') }}"></script>
@@ -29,85 +29,117 @@
         </symbol>
     </svg>
 
-    <div id="player" class="footer">
-        <audio id="js-player">
-        </audio>
-    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-9 col-md-push-3">
 
-    <p>
-        <b>Episode:</b> {{ episode.id }} ({{ episode.date }})<br/>
-        <b>Homepage:</b> <a href="{{ episode.homepage }}">Link</a><br/>
-        <b>Listen:</b> <a href="{{ episode.media }}">mp3</a><br/>
-    </p>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Episode {{ episode.id }} Transcript</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="transcript">
+                            <div id="tc_0">
+                                <table class="styled-table">
+                                    <tr>
+                                        <th>Listen</th>
+                                        <th>Timecode</th>
+                                        <th>Speaker</th>
+                                        <th>Transcript</th>
+                                        {% if current_user.is_authenticated %}
+                                            <th></th>
+                                        {% endif %}
+                                    </tr>
 
-    <div class="terms">
-        <b>Discussed: </b>
-        {% for t in terms %}
-            <a href="{{ url_for('terms_bp.view', termId=t.id) }}">{{ t.term }}</a>,
-        {% endfor %}
-    </div>
-    <div class="transcript">
-        <div id="tc_0">
-
-            <table class="styled-table">
-                <tr>
-                    <th>Listen</th>
-                    <th>Timecode</th>
-                    <th>Speaker</th>
-                    <th>Transcript</th>
-                    {% if current_user.is_authenticated %}
-                        <th></th>
-                    {% endif %}
-                </tr>
-
-                {% for t in transcripts %}
-                    <tr>
-                        <td>
-                            <div id="tc_{{ t.timecode_secs }}">
-                                <button class="player-src"
-                                        data-src="{{ episode.media }}#t={{ t.timecode_secs }}"
-                                        data-timecode="{{ t.timecode_secs }}"
-                                        data-episode="{{ episode.id }}">
-                                    <div class="play-btn">
-                                        <svg width="25" height="25">
-                                            <use xlink:href="#play-button"/>
-                                        </svg>
-                                    </div>
-                                </button>
+                                    {% for t in transcripts %}
+                                        <tr>
+                                            <td>
+                                                <div id="tc_{{ t.timecode_secs }}">
+                                                    <button class="player-src"
+                                                            data-src="{{ episode.media }}#t={{ t.timecode_secs }}"
+                                                            data-timecode="{{ t.timecode_secs }}"
+                                                            data-episode="{{ episode.id }}">
+                                                        <div class="play-btn">
+                                                            <svg width="25" height="25">
+                                                                <use xlink:href="#play-button"/>
+                                                            </svg>
+                                                        </div>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {{ t.timecode }}
+                                            </td>
+                                            <td>{{ t.speaker }}</td>
+                                            <td>
+                                                {{ t.transcript }}
+                                            </td>
+                                            {% if current_user.is_authenticated %}
+                                                <td>
+                                                    {% if t.id in stars %}
+                                                        <form action="{{ url_for('like_bp.unlike', transcript_id=t.id) }}"
+                                                              method="POST"
+                                                              class='like-form' id="{{ t.id }}">
+                                                            <input type="hidden" name="post_id" value=1>
+                                                            <button type="submit"
+                                                                    class="btn btn-link g-color-gray-dark-v5 g-color-red--hover text-red p-0 border-0 btn-outline-light like-btn{{ t.id }}">
+                                                                <i class="fa fa-heart" aria-hidden="true"></i>
+                                                            </button>
+                                                        </form>
+                                                    {% else %}
+                                                        <form action="{{ url_for('like_bp.like', transcript_id=t.id) }}"
+                                                              method="POST"
+                                                              class='like-form' id="{{ t.id }}">
+                                                            <input type="hidden" name="post_id" value=1>
+                                                            <button type="submit"
+                                                                    class="btn btn-link g-color-gray-dark-v5 g-color-red--hover text-red p-0 border-0 btn-outline-light like-btn{{ t.id }}">
+                                                                <i class="fa fa-heart-o" aria-hidden="true"></i>
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                </td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                </table>
                             </div>
-                        </td>
-                        <td>
-                            {{ t.timecode }}
-                        </td>
-                        <td>{{ t.speaker }}</td>
-                        <td>
-                            {{ t.transcript }}
-                        </td>
-                        {% if current_user.is_authenticated %}
-                            <td>
-                                {% if t.id in stars %}
-                                    <form action="{{ url_for('like_bp.unlike', transcript_id=t.id) }}" method="POST" class='like-form' id="{{ t.id }}">
-                                        <input type="hidden" name="post_id" value=1>
-                                        <button type="submit"
-                                                class="btn btn-link g-color-gray-dark-v5 g-color-red--hover text-red p-0 border-0 btn-outline-light like-btn{{ t.id }}">
-                                            <i class="fa fa-heart" aria-hidden="true"></i>
-                                        </button>
-                                    </form>
-                                {% else %}
-                                    <form action="{{ url_for('like_bp.like', transcript_id=t.id) }}" method="POST" class='like-form' id="{{ t.id }}">
-                                        <input type="hidden" name="post_id" value=1>
-                                        <button type="submit"
-                                                class="btn btn-link g-color-gray-dark-v5 g-color-red--hover text-red p-0 border-0 btn-outline-light like-btn{{ t.id }}">
-                                            <i class="fa fa-heart-o" aria-hidden="true"></i>
-                                        </button>
-                                    </form>
-                                {% endif %}
-                            </td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
-            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-3 col-md-pull-9">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Episode Details</h3>
+                    </div>
+                    <div class="panel-body">
+                        <b>Episode</b>: {{ episode.id }}<br/>
+                        <b>Date</b>: {{ episode.date }}<br/>
+                        <b>Homepage:</b> <a href="{{ episode.homepage }}">Link</a><br/>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Play</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="player">
+                            <audio id="js-player">
+                            </audio>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Topics Discussed</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% for t in terms %}
+                            <a href="{{ url_for('terms_bp.view', termId=t.id) }}">{{ t.term }}</a><br/>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
 {% endblock %}

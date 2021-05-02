@@ -1,10 +1,19 @@
-{% extends 'layout.html' %}
+{% extends 'header.html' %}
 
-{% block app_content %}
-
-<ul>
-<li><a href="{{ url_for('episode_bp.home') }}">Episodes</a></li>
-<li><a href="{{ url_for('search_bp.search') }}">Search</a></li>
-</ul>
-{%- endblock app_content %}
+{% block content %}
+    <div id="landing">
+        <div class="container">
+            <div id="landing-row" class="row justify-content-center align-items-center">
+                <div id="landing-column" class="col-md-6">
+                    <div id="landing-box" class="col-md-12">
+                        <ul>
+                            <li><a href="{{ url_for('episode_bp.home') }}">Episodes</a></li>
+                            <li><a href="{{ url_for('search_bp.search') }}">Search</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{%- endblock content %}
 
