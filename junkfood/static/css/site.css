@@ -1,0 +1,128 @@
+body {
+    background-color: #012246;
+    background-attachment: fixed;
+    background-position: 50% 0%;
+    background-repeat: no-repeat;
+}
+
+.styled-table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.styled-table thead tr {
+    background-color: #009879;
+    color: #ffffff;
+    text-align: left;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px;
+}
+
+.styled-table tbody tr {
+    border-bottom: thin solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+}
+
+.styled-table tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+
+.height-override {
+    height: auto !important;
+}
+
+.transcript {
+    padding: 10px;
+    margin-bottom: 40px;
+    font-size: 15px;
+}
+
+.footer {
+    margin-top: 40px;
+}
+
+.play-btn {
+    width: 60%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.play-btn__svg {
+    transition: 1s;
+    fill: #7c7c7c;
+    opacity: .5;
+}
+
+.play-btn:hover .play-btn__svg {
+    fill: #a41d33;
+    opacity: 1;
+}
+
+.player-src {
+    display: inline-block;
+    border: none;
+    padding: 0;
+    margin: 0;
+    height: 45px;
+    width: 45px;
+    vertical-align: center;
+    background-color: Transparent;
+}
+
+.symbol {
+    display: none;
+}
+
+.isDisabled {
+  color: currentColor;
+  cursor: not-allowed;
+  opacity: 0.5;
+  text-decoration: none;
+}
+
+#landing .container #landing-row #landing-column #landing-box {
+  margin-top: 120px;
+  max-width: 600px;
+  height: 320px;
+  border: 1px solid #9C9C9C;
+  background-color: #EAEAEA;
+}
+#landing .container #landing-row #landing-column #landing-box #landing-form {
+  padding: 20px;
+}
+
+/* plyr.css override */
+.plyr--audio .plyr__controls {
+	display: block;
+  background-color: transparent !important;
+  padding: 20px 32px !important;
+}
+
+.plyr__time + .plyr__time::before {
+    content: '';
+}
