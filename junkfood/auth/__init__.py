@@ -35,7 +35,7 @@ def login():
             next_page = request.args.get('next')
             return redirect(next_page or url_for('base_bp.home'))
 
-        flash('Invalid username/password combination')
+        flash('Invalid username or password.')
         return redirect(url_for('auth_bp.login'))
     return render_template('auth/login.html', form=form)
 
@@ -49,7 +49,7 @@ def register():
     if form.validate_on_submit():
         user_exists = User.query.filter_by(email=form.email.data).first()
         if user_exists:
-            flash('User already exists.')
+            flash('A user with that address already exists.')
             return redirect(url_for('auth_bp.register'))
 
         newuser = User(email=form.email.data)

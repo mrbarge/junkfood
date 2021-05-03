@@ -7,43 +7,12 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="{{ url_for('static', filename='mark/mark.js') }}"></script>
     <script src="https://cdn.plyr.io/3.5.6/plyr.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+    <script src="{{ url_for('static', filename='js/setup-plyr.js') }}"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const player = new Plyr(document.getElementById('js-player'));
-            window.player = player;
-
-            // Bind event listener
-            function on(selector, type, callback) {
-                document.querySelector(selector).addEventListener(type, callback, false);
-            }
-
-            $(document).ready(() => {
-
-                $('.player-src').on('click', function () {
-
-                    src = $(this).data("src");
-                    timecode = $(this).data("timecode");
-                    episode = $(this).data("episode");
-
-                    player.source = {
-                        type: 'audio',
-                        title: episode,
-                        sources: [
-                            {
-                                src: src,
-                                type: 'audio/mp3',
-                            }
-                        ],
-                    };
-                    player.play();
-                });
-            });
-        });
+        setupPlyr();
     </script>
-
 {% endblock %}
 
 {% block app_content %}
@@ -55,45 +24,65 @@
         </symbol>
     </svg>
 
-    <div id="player" class="footer">
-        <audio id="js-player">
-        </audio>
-    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-9 col-md-push-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">My Liked Moments</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% if matches %}
+                            <table class="styled-table">
+                                <tr>
+                                    <th>Episode</th>
+                                    <th>Listen</th>
+                                    <th>Speaker</th>
+                                    <th>Timecode</th>
+                                    <th>Transcript</th>
+                                </tr>
+                                {% for match in matches %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('episode_bp.view', episodeId=match.id) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.id }}</a>
+                                        </td>
+                                        <td>
+                                            <button class="player-src"
+                                                    data-src="{{ match.media }}#t={{ match.Transcript.timecode_secs }}"
+                                                    data-timecode="{{ match.Transcript.timecode_secs }}"
+                                                    data-episode="{{ match.id }}">
+                                                <div class="play-btn">
+                                                    <svg width="25" height="25">
+                                                        <use xlink:href="#play-button"/>
+                                                    </svg>
+                                                </div>
+                                            </button>
+                                        </td>
+                                        <td>{{ match.Transcript.speaker }}</td>
+                                        <td>{{ match.Transcript.timecode }}</td>
+                                        <td>{{ match.Transcript.transcript }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
 
-    {% if matches %}
-        <div class="transcript">
-            <table class="styled-table">
-                <tr>
-                    <th>Episode</th>
-                    <th>Listen</th>
-                    <th>Speaker</th>
-                    <th>Timecode</th>
-                    <th>Transcript</th>
-                </tr>
-                {% for match in matches %}
-                    <tr>
-                        <td>
-                            <a href="{{ url_for('episode_bp.view', episodeId=match.id) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.id }}</a>
-                        </td>
-                        <td>
-                            <button class="player-src"
-                                    data-src="{{ match.media }}#t={{ match.Transcript.timecode_secs }}"
-                                    data-timecode="{{ match.Transcript.timecode_secs }}"
-                                    data-episode="{{ match.id }}">
-                                <div class="play-btn">
-                                    <svg width="25" height="25">
-                                        <use xlink:href="#play-button"/>
-                                    </svg>
-                                </div>
-                            </button>
-                        </td>
-                        <td>{{ match.Transcript.speaker }}</td>
-                        <td>{{ match.Transcript.timecode }}</td>
-                        <td>{{ match.Transcript.transcript }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
+            <div class="col-xs-12 col-md-3 col-md-pull-9">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Play</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="player">
+                            <audio id="js-player">
+                            </audio>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    {% endif %}
+    </div>
 
 {% endblock %}

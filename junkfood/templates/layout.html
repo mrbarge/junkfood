@@ -1,6 +1,6 @@
 {% extends 'header.html' %}
 
-{% block content %}
+{%- block content %}
     <div class="container">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -12,8 +12,11 @@
     </div>
     {% block app_content %}
     {% endblock %}
+
+    {%- block footer %}
+    <footer class="footer bg-light">
+        <a href="https://github.com/mrbarge/junkfood">Junkfood @ Github</a>
+    </footer>
+    {%- endblock footer %}
 {%- endblock content %}
 
-{% block footer %}
-    {% include 'footer.html' %}
-{%- endblock footer %}

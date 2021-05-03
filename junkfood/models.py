@@ -53,6 +53,12 @@ class TermFrequency(db.Model):
     freq = Column('freq', db.Integer)
 
 
+class Show(db.Model):
+    __tablename__ = 'show'
+    id = Column(db.Integer, primary_key=True, autoincrement=True)
+    title = Column('title', db.String(20))
+
+
 class Role(db.Model):
     __tablename__ = 'roles'
 
@@ -100,6 +106,7 @@ class Episode(db.Model):
     podcast = db.Column(db.Unicode(16))
     premium = db.Column(db.Boolean)
     archive = db.Column(db.Boolean)
+    show = db.Column(db.Integer, db.ForeignKey('show.id'))
 
 
 class Transcript(db.Model):
@@ -135,7 +142,7 @@ def get_random_episode():
 def get_episode(id):
     '''
     Retrieve episode with id.
-    :return: List of episode numbers
+    :return: Episode
     '''
     try:
         episode = Episode.query.filter(Episode.id == id).first()
@@ -143,6 +150,19 @@ def get_episode(id):
         raise Exception()
 
     return episode
+
+
+def get_show(id):
+    '''
+    Retrieve show with id.
+    :return: Show
+    '''
+    try:
+        show = Show.query.filter(Show.id == id).first()
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise Exception()
+
+    return show
 
 
 def get_all_episode_ids(has_transcript=True):
@@ -223,7 +243,7 @@ def search(query, page, items_per_page, limit):
     '''
     parsed_query = searchquery.parse_query(query)
 
-    match_query = Transcript.query.join(Episode).add_columns(Episode.date, Episode.id, Episode.media).filter()
+    match_query = db.session.query(Transcript, Episode, Show).filter(Transcript.episode == Episode.id, Episode.show == Show.id)
     if searchquery.PHRASE_KEY in parsed_query:
         for phrase in parsed_query[searchquery.PHRASE_KEY]:
             match_query = match_query.filter(Transcript.transcript.ilike(f'%{phrase}%'))
@@ -231,9 +251,11 @@ def search(query, page, items_per_page, limit):
         iv = int(parsed_query[searchquery.EPISODE_KEY][0])
         match_query = match_query.filter(Transcript.episode == iv)
     if searchquery.SPEAKER_KEY in parsed_query:
-        match_query = match_query.filter(Transcript.speaker.match(parsed_query[searchquery.SPEAKER_KEY][0]))
+        match_query = match_query.filter(func.lower(Transcript.speaker) == func.lower(parsed_query[searchquery.SPEAKER_KEY][0]))
     if searchquery.SINCE_KEY in parsed_query:
         match_query = match_query.filter(Episode.date >= parsed_query[searchquery.SINCE_KEY][0])
+    if searchquery.SHOW_KEY in parsed_query:
+        match_query = match_query.filter(func.lower(Show.title) == func.lower(parsed_query[searchquery.SHOW_KEY][0]))
     if searchquery.UNTIL_KEY in parsed_query:
         match_query = match_query.filter(Episode.date <= parsed_query[searchquery.UNTIL_KEY][0])
 

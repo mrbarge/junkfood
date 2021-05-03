@@ -70,13 +70,13 @@
                                 {% for match in matches.items %}
                                     <tr>
                                         <td>
-                                            <a href="{{ url_for('episode_bp.view', episodeId=match.id) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.id }}</a>
+                                            <a href="{{ url_for('episode_bp.view', episodeId=match.Episode.number) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.Episode.number }}</a>
                                         </td>
                                         <td>
                                             <button class="player-src"
                                                     data-src="{{ match.media }}#t={{ match.Transcript.timecode_secs }}"
                                                     data-timecode="{{ match.Transcript.timecode_secs }}"
-                                                    data-episode="{{ match.id }}">
+                                                    data-episode="{{ match.Episode.number }}">
                                                 <div class="play-btn">
                                                     <svg width="25" height="25">
                                                         <use xlink:href="#play-button"/>
@@ -118,7 +118,9 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-xs-12 col-md-3 col-md-pull-9">
+            {% if matches %}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Search Results</h3>
@@ -142,19 +144,42 @@
 
                     </div>
                 </div>
-                {% if matches %}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Play</h3>
-                        </div>
-                        <div class="panel-body">
-                            <div id="player">
-                                <audio id="js-player">
-                                </audio>
-                            </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Play</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="player">
+                            <audio id="js-player">
+                            </audio>
                         </div>
                     </div>
-                {% endif %}
+                </div>
+            {% else %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Search Tips</h3>
+                    </div>
+                    <div class="panel-body">
+                    <ul>
+                        <li><b>episode:</b><i>number</i></li>
+                        <code>episode:605</code>
+                        <li><b>since:</b><i>date</i></li>
+                        <code>since:2021-03-01</code>
+                        <code>since:2019</code>
+                        <li><b>until:</b><i>date</i></li>
+                        <code>until:2020-05-05</code>
+                        <code>until:2018</code>
+                        <li><b>speaker:</b><i>speaker</i></li>
+                        <code>speaker:Frank</code>
+                        <li><b>show:</b><i>show title</i></li>
+                        <code>show:"Film Junk"</code>
+                        <li><i>"spoken phrase"</i></li>
+                        <code>"cream dream supreme"</code>
+                    </ul>
+                    </div>
+                </div>
+            {% endif %}
             </div>
         </div>
     </div>

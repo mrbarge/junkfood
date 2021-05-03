@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, current_app
 from flask_login import current_user
 from junkfood import models
 
+
 episode_bp = Blueprint('episode_bp', __name__)
 
 
@@ -15,12 +16,13 @@ def home():
 @episode_bp.route('/<episodeId>/<timecode>', methods=['GET'])
 def view(episodeId, timecode):
     episode = models.get_episode(episodeId)
+    show = models.get_show(episode.show)
     transcripts = models.get_transcripts(episodeId)
     terms = models.get_terms_for_episode(episodeId, current_app.config['TERMS_PER_EPISODE'])
     transcript_stars = []
     if current_user.is_authenticated:
         transcript_stars = models.get_stars(current_user.id, episode.id)
-    return render_template('episode/view.html', episode=episode, transcripts=transcripts, timecode=timecode, stars=transcript_stars, terms=terms)
+    return render_template('episode/view.html', episode=episode, show=show, transcripts=transcripts, timecode=timecode, stars=transcript_stars, terms=terms)
 
 
 @episode_bp.route('/random', methods=['GET'])

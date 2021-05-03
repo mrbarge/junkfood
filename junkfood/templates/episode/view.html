@@ -32,10 +32,9 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-md-9 col-md-push-3">
-
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Episode {{ episode.id }} Transcript</h3>
+                        <h3 class="panel-title">{{ show.title }} Episode {{ episode.id }} Transcript</h3>
                     </div>
                     <div class="panel-body">
                         <div id="transcript">
@@ -113,6 +112,7 @@
                         <h3 class="panel-title">Episode Details</h3>
                     </div>
                     <div class="panel-body">
+                        <b>{{ show.title }}</b><br/>
                         <b>Episode</b>: {{ episode.id }}<br/>
                         <b>Date</b>: {{ episode.date }}<br/>
                         <b>Homepage:</b> <a href="{{ episode.homepage }}">Link</a><br/>
