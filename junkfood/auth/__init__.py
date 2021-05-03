@@ -20,8 +20,11 @@ def login():
         return redirect(url_for('base_bp.home'))
 
     form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+    if form.validate_on_submit() or request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        print(email)
+        user = User.query.filter_by(email=email).first()
         if not user:
             flash('Invalid username/password combination')
             return redirect(url_for('auth_bp.login'))
@@ -30,7 +33,7 @@ def login():
             flash('User email not confirmed. Please check your email for a confirmation link.')
             return redirect(url_for('auth_bp.login'))
 
-        if user.check_password(password=form.password.data):
+        if user.check_password(password=password):
             login_user(user)
             next_page = request.args.get('next')
             return redirect(next_page or url_for('base_bp.home'))

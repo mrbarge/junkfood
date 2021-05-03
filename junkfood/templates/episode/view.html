@@ -3,7 +3,6 @@
 {% block styles %}
     {{ super() }}
     <link rel="stylesheet" href="https://cdn.plyr.io/3.6.7/plyr.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 {% endblock %}
 
 {% block scripts %}
@@ -82,7 +81,7 @@
                                                             <input type="hidden" name="post_id" value=1>
                                                             <button type="submit"
                                                                     class="btn btn-link g-color-gray-dark-v5 g-color-red--hover text-red p-0 border-0 btn-outline-light like-btn{{ t.id }}">
-                                                                <i class="fa fa-heart" aria-hidden="true"></i>
+                                                                <i class="fas fa-heart" aria-hidden="true"></i>
                                                             </button>
                                                         </form>
                                                     {% else %}
@@ -92,7 +91,7 @@
                                                             <input type="hidden" name="post_id" value=1>
                                                             <button type="submit"
                                                                     class="btn btn-link g-color-gray-dark-v5 g-color-red--hover text-red p-0 border-0 btn-outline-light like-btn{{ t.id }}">
-                                                                <i class="fa fa-heart-o" aria-hidden="true"></i>
+                                                                <i class="far fa-heart" aria-hidden="true"></i>
                                                             </button>
                                                         </form>
                                                     {% endif %}

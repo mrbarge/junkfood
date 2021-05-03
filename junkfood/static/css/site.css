@@ -27,10 +27,11 @@ body {
 
 .styled-table tbody tr {
     border-bottom: thin solid #dddddd;
+    background-color: #212121;
 }
 
 .styled-table tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
+    background-color: #424242;
 }
 
 .styled-table tbody tr:last-of-type {
@@ -119,4 +120,101 @@ body {
 
 .plyr__time + .plyr__time::before {
     content: '';
+}
+
+#login-dp{
+    min-width: 250px;
+    padding: 14px 14px 0;
+    overflow:hidden;
+    background-color:rgba(255,255,255,.8);
+}
+#login-dp .help-block{
+    font-size:12px
+}
+#login-dp .bottom{
+    background-color:rgba(255,255,255,.8);
+    border-top:1px solid #ddd;
+    clear:both;
+    padding:14px;
+}
+#login-dp .form-group {
+    margin-bottom: 10px;
+}
+@media(max-width:768px){
+    #login-dp{
+        background-color: inherit;
+        color: #fff;
+    }
+    #login-dp .bottom{
+        background-color: inherit;
+        border-top:0 none;
+    }
+}
+
+.logo-container {
+    text-align: center;
+    position: relative;
+}
+.logo-shade {
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,20,0.9);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.logo-foreground {
+  backdrop-filter: blur(10px);
+}
+
+.vertical-center {
+  min-height: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+body,
+main::before {
+  background: url('/static/logos/bluray.jpg') 0 / cover fixed;
+}
+
+main {
+  margin: 100px auto;
+  position: relative;
+  padding: 10px 5px;
+  background: hsla(0,0%,100%,.3);
+  border-radius: 10px;
+  width: 40%;
+  box-shadow: 5px 3px 30px black;
+  overflow: hidden;
+  text-align: center;
+}
+
+main::before {
+  content: '';
+  margin: -35px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  filter: blur(20px);
+  z-index: -1;
+}
+
+.logo-heading {
+  font-size: 14px;
+  font-family: verdana,sans-serif;
+  text-align: center;
+}
+
+.panel-default {
+    background-color: #121212;
+    color: #fafafa;
+}
+
+.panel-default .panel-heading {
+    background-color: #332940;
+    color: #fafafa;
 }
