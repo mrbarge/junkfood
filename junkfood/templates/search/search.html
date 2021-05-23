@@ -38,14 +38,6 @@
 {% endblock %}
 
 {% block app_content %}
-    <svg class="symbol ">
-        <symbol id="play-button" viewBox="0 0 26 26">
-            <polygon class="play-btn__svg" points="9.33 6.69 9.33 19.39 19.3 13.04 9.33 6.69"/>
-            <path class="play-btn__svg"
-                  d="M26,13A13,13,0,1,1,13,0,13,13,0,0,1,26,13ZM13,2.18A10.89,10.89,0,1,0,23.84,13.06,10.89,10.89,0,0,0,13,2.18Z"/>
-        </symbol>
-    </svg>
-
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-md-9 col-md-push-3">
@@ -78,9 +70,9 @@
                                                     data-timecode="{{ match.Transcript.timecode_secs }}"
                                                     data-episode="{{ match.Episode.number }}">
                                                 <div class="play-btn">
-                                                    <svg width="25" height="25">
-                                                        <use xlink:href="#play-button"/>
-                                                    </svg>
+                                                    <span style="font-size: 2em; color: #aed581;">
+                                                        <i class="fas fa-play-circle" aria-hidden="true"></i>
+                                                    </span>
                                                 </div>
                                             </button>
                                         </td>
@@ -120,66 +112,66 @@
             </div>
 
             <div class="col-xs-12 col-md-3 col-md-pull-9">
-            {% if matches %}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Search Results</h3>
-                    </div>
-                    <div class="panel-body">
-                        Displaying search results for <code>{{ search }}</code>
+                {% if matches %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Search Results</h3>
+                        </div>
+                        <div class="panel-body">
+                            Displaying search results for <code>{{ search }}</code>
 
-                        <form action="" method="post" novalidate class="form-inline">
-                            {{ form.hidden_tag() }}
-                            <p>
-                            <div class="form-group mx-sm-3 mb-2">
-                                {{ form.search(size=15,class='form-control', placeholder='Search') }}
-                                {{ form.submit(class='btn btn-primary mb-2') }}
-                                {% for error in form.search.errors %}
-                                    <span style="color: red;">[{{ error }}]</span>
-                                {% endfor %}
-                            </div>
+                            <form action="" method="post" novalidate class="form-inline">
+                                {{ form.hidden_tag() }}
+                                <p>
+                                <div class="form-group mx-sm-3 mb-2">
+                                    {{ form.search(size=15,class='form-control', placeholder='Search') }}
+                                    {{ form.submit(class='btn btn-primary mb-2') }}
+                                    {% for error in form.search.errors %}
+                                        <span style="color: red;">[{{ error }}]</span>
+                                    {% endfor %}
+                                </div>
 
-                            </p>
-                        </form>
+                                </p>
+                            </form>
 
-                    </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Play</h3>
-                    </div>
-                    <div class="panel-body">
-                        <div id="player">
-                            <audio id="js-player">
-                            </audio>
                         </div>
                     </div>
-                </div>
-            {% else %}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Search Tips</h3>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Play</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="player">
+                                <audio id="js-player">
+                                </audio>
+                            </div>
+                        </div>
                     </div>
-                    <div class="panel-body">
-                    <ul>
-                        <li><b>episode:</b><i>number</i></li>
-                        <code>episode:605</code>
-                        <li><b>since:</b><i>date</i></li>
-                        <code>since:2021-03-01</code>
-                        <code>since:2019</code>
-                        <li><b>until:</b><i>date</i></li>
-                        <code>until:2020-05-05</code>
-                        <code>until:2018</code>
-                        <li><b>speaker:</b><i>speaker</i></li>
-                        <code>speaker:Frank</code>
-                        <li><b>show:</b><i>show title</i></li>
-                        <code>show:"Film Junk"</code>
-                        <li><i>"spoken phrase"</i></li>
-                        <code>"cream dream supreme"</code>
-                    </ul>
+                {% else %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Search Tips</h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul>
+                                <li><b>episode:</b><i>number</i></li>
+                                <code>episode:605</code>
+                                <li><b>since:</b><i>date</i></li>
+                                <code>since:2021-03-01</code>
+                                <code>since:2019</code>
+                                <li><b>until:</b><i>date</i></li>
+                                <code>until:2020-05-05</code>
+                                <code>until:2018</code>
+                                <li><b>speaker:</b><i>speaker</i></li>
+                                <code>speaker:Frank</code>
+                                <li><b>show:</b><i>show title</i></li>
+                                <code>show:"Film Junk"</code>
+                                <li><i>"spoken phrase"</i></li>
+                                <code>"cream dream supreme"</code>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
             </div>
         </div>
     </div>
