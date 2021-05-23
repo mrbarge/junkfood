@@ -295,3 +295,7 @@ input[type="submit"] {
 .form-control {
     color: #ffffff;
 }
+
+.form-login-control {
+    color: #1b1e21;
+}

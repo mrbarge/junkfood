@@ -386,7 +386,9 @@ def my_likes(user_id):
     try:
         likes = StarredTranscripts.query.filter(StarredTranscripts.user_id == user_id)
         like_transcripts = [x.transcript_id for x in likes]
-        transcripts = Transcript.query.join(Episode).add_columns(Episode.date, Episode.id, Episode.media).filter(
+        transcripts = db.session.query(Transcript, Episode, Show).filter(
+            Transcript.episode == Episode.id,
+            Episode.show == Show.id,
             Transcript.id.in_(like_transcripts)).all()
         return transcripts
     except sqlalchemy.exc.SQLAlchemyError as e:
@@ -401,7 +403,9 @@ def top_likes():
                                                                'count')).group_by(
             StarredTranscripts.transcript_id).order_by(desc('count')).limit(20).all()
         like_transcripts = [x.transcript_id for x in top_likes]
-        transcripts = Transcript.query.join(Episode).add_columns(Episode.date, Episode.id, Episode.media).filter(
+        transcripts = db.session.query(Transcript, Episode, Show).filter(
+            Transcript.episode == Episode.id,
+            Episode.show == Show.id,
             Transcript.id.in_(like_transcripts)).all()
         return transcripts
     except sqlalchemy.exc.SQLAlchemyError as e:
@@ -415,8 +419,9 @@ def classics():
         classic_lookup = {}
         for c in classics:
             classic_lookup[c.transcript_id] = c.description
-        transcripts = Transcript.query.join(Episode).add_columns(Classics.description, Episode.date, Episode.id,
-                                                                 Episode.media).filter(
+        transcripts = db.session.query(Transcript, Classics, Episode, Show).filter(
+            Transcript.episode == Episode.id,
+            Episode.show == Show.id,
             Transcript.id.in_(classic_lookup.keys()),
             Classics.transcript_id == Transcript.id).all()
         return transcripts

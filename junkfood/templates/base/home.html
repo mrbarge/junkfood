@@ -8,9 +8,11 @@
             <h1 style="font-size: 4em;">junkfood.fm</h1>
         </div>
         <div class="logo-links">
+            {% if current_user.is_anonymous %}
             <span>
             <a href="{{ url_for('auth_bp.login') }}">Login</a>
             </span>
+            {% endif %}
             <span>
             <a href="{{ url_for('episode_bp.random') }}">Random episode</a>
             </span>

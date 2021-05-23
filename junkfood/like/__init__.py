@@ -60,5 +60,6 @@ def classics():
         matches = models.classics()
         return render_template('like/classics.html', matches=matches)
     except Exception as e:
+        print(e)
         flash('Unable to retrieve user favourites.')
     return redirect(url_for('base_bp.home'))
