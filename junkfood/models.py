@@ -313,13 +313,17 @@ def get_episodes_for_term(term_id):
     '''
     try:
         term = Terms.query.filter(Terms.id == term_id).first()
-        all_episodes = TermFrequency.query.filter(TermFrequency.term_id == term_id).order_by(
-            TermFrequency.freq.desc()).limit(20)
+        all_episodes = db.session.query(TermFrequency, Episode, Show).filter(
+            TermFrequency.episode_id == Episode.id,
+            Episode.show == Show.id,
+            TermFrequency.term_id == term_id
+        ).order_by(TermFrequency.freq.desc()).limit(20)
         terms = []
         for ep in all_episodes:
             terms.append({
-                'episode_id': ep.episode_id,
-                'freq': ep.freq,
+                'episodeNumber': ep.Episode.episode,
+                'showTitle': ep.Show.title,
+                'freq': ep.TermFrequency.freq,
             })
         return terms
     except sqlalchemy.exc.SQLAlchemyError:

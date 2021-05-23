@@ -1,15 +1,31 @@
 {% extends 'layout.html' %}
 
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
 {% block scripts %}
-{{ super() }}
+    {{ super() }}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
 {% endblock %}
 
 {% block app_content %}
-<b>Top episodes discussing {{ term.term }}</b>
-<ul>
-{% for e in episodes %}
-    <li><a href="{{ url_for('episode_bp.view', episodeId=e.episode_id) }}">Episode {{ e.episode_id }}</a></li>
-{% endfor %}
-</ul>
-
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-9 col-md-push-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Top episodes about {{ term.term }}</h3>
+                    </div>
+                    <div class="panel-body">
+                        <ul>
+                        {% for e in episodes %}
+                            <li><a href="{{ url_for('episode_bp.view', showTitle=e.showTitle,episodeNumber=e.episodeNumber) }}">Episode {{ e.episodeNumber }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
