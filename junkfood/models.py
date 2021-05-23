@@ -99,11 +99,10 @@ class Episode(db.Model):
     __tablename__ = 'episodes'
 
     id = db.Column(db.Integer, primary_key=True)
-    number = db.Column(db.String(64))
+    episode = db.Column(db.String(64))
     date = db.Column(db.Date)
     homepage = db.Column(db.Unicode(255))
     media = db.Column(db.Unicode(255))
-    podcast = db.Column(db.Unicode(16))
     premium = db.Column(db.Boolean)
     archive = db.Column(db.Boolean)
     show = db.Column(db.Integer, db.ForeignKey('show.id'))
@@ -139,17 +138,16 @@ def get_random_episode():
     return episode
 
 
-def get_episode(id):
+def get_episode(show_id, episode_number):
     '''
     Retrieve episode with id.
     :return: Episode
     '''
     try:
-        episode = Episode.query.filter(Episode.id == id).first()
+        episode = Episode.query.filter(Episode.show == show_id, Episode.episode == episode_number).first()
+        return episode
     except sqlalchemy.exc.SQLAlchemyError:
         raise Exception()
-
-    return episode
 
 
 def get_show(id):
@@ -165,21 +163,40 @@ def get_show(id):
     return show
 
 
-def get_all_episode_ids(has_transcript=True):
+def get_all_shows():
+    '''
+    Retrieve show with title.
+    :return: Show
+    '''
+    try:
+        shows = Show.query.all()
+        return shows
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise Exception()
+
+
+def get_show_by_title(title):
+    '''
+    Retrieve show with title.
+    :return: Show
+    '''
+    try:
+        show = Show.query.filter(Show.title == title).first()
+        return show
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise Exception()
+
+
+def get_all_episode_numbers(showTitle):
     '''
     Retrieve all episodes.
     :return: List of episode numbers
     '''
     try:
-        if has_transcript:
-            rows = Transcript.query.distinct(Transcript.episode)
-            results = [transcript.episode for transcript in rows]
-        else:
-            rows = Episode.query.distinct(Episode.id)
-            results = [episode.id for episode in rows]
-
+        show = Show.query.filter(Show.title == showTitle).first()
+        rows = Episode.query.filter(Episode.show == show.id).distinct(Episode.id)
+        results = [episode.episode for episode in rows]
         return results
-
     except sqlalchemy.exc.SQLAlchemyError:
         raise Exception()
 
@@ -191,10 +208,9 @@ def get_transcripts(episode_id):
     '''
     try:
         all_transcripts = Transcript.query.filter(Transcript.episode == episode_id).order_by(Transcript.index)
+        return all_transcripts
     except sqlalchemy.exc.SQLAlchemyError:
         raise Exception()
-
-    return all_transcripts
 
 
 def get_stars(user_id, episode_id):
@@ -243,15 +259,17 @@ def search(query, page, items_per_page, limit):
     '''
     parsed_query = searchquery.parse_query(query)
 
-    match_query = db.session.query(Transcript, Episode, Show).filter(Transcript.episode == Episode.id, Episode.show == Show.id)
+    match_query = db.session.query(Transcript, Episode, Show).filter(Transcript.episode == Episode.id,
+                                                                     Episode.show == Show.id)
     if searchquery.PHRASE_KEY in parsed_query:
         for phrase in parsed_query[searchquery.PHRASE_KEY]:
             match_query = match_query.filter(Transcript.transcript.ilike(f'%{phrase}%'))
     if searchquery.EPISODE_KEY in parsed_query:
-        iv = int(parsed_query[searchquery.EPISODE_KEY][0])
-        match_query = match_query.filter(Transcript.episode == iv)
+        iv = parsed_query[searchquery.EPISODE_KEY][0]
+        match_query = match_query.filter(Episode.episode == iv)
     if searchquery.SPEAKER_KEY in parsed_query:
-        match_query = match_query.filter(func.lower(Transcript.speaker) == func.lower(parsed_query[searchquery.SPEAKER_KEY][0]))
+        match_query = match_query.filter(
+            func.lower(Transcript.speaker) == func.lower(parsed_query[searchquery.SPEAKER_KEY][0]))
     if searchquery.SINCE_KEY in parsed_query:
         match_query = match_query.filter(Episode.date >= parsed_query[searchquery.SINCE_KEY][0])
     if searchquery.SHOW_KEY in parsed_query:
@@ -259,9 +277,10 @@ def search(query, page, items_per_page, limit):
     if searchquery.UNTIL_KEY in parsed_query:
         match_query = match_query.filter(Episode.date <= parsed_query[searchquery.UNTIL_KEY][0])
 
-    matches = match_query.order_by(Transcript.episode).order_by(Transcript.timecode_secs).limit(limit).from_self().paginate(page,
-                                                                                                   items_per_page,
-                                                                                                   False)
+    matches = match_query.order_by(Transcript.episode).order_by(Transcript.timecode_secs).limit(
+        limit).from_self().paginate(page,
+                                    items_per_page,
+                                    False)
     return matches
 
 

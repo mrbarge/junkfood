@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block scripts %}
+    {{ super() }}
+{% endblock %}
+
+{% block app_content %}
+    <ul>
+        {% for i in episodes %}
+            <li><a href="{{ url_for('episode_bp.view', showTitle=showTitle, episodeNumber=i) }}">{{ i }}</a></li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}

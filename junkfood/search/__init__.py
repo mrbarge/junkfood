@@ -31,7 +31,6 @@ def search(page=None, search=None):
 
     if request.method == 'POST':
         search = request.form.get("search")
-        #search = search_form.search.data
         page = request.args.get('page', 1, type=int)
         return redirect(url_for('search_bp.search', page=page, search=search))
 

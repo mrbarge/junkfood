@@ -70,11 +70,11 @@
                                 {% for match in matches.items %}
                                     <tr>
                                         <td>
-                                            <a href="{{ url_for('episode_bp.view', episodeId=match.Episode.number) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.Episode.number }}</a>
+                                            <a href="{{ url_for('episode_bp.view', showTitle=match.Show.title,episodeNumber=match.Episode.episode) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.Episode.episode }}</a>
                                         </td>
                                         <td>
                                             <button class="player-src"
-                                                    data-src="{{ match.media }}#t={{ match.Transcript.timecode_secs }}"
+                                                    data-src="{{ url_for('media_bp.get', show_id=match.Episode.show, episodeNumber=match.Episode.episode) }}#t={{ match.Transcript.timecode_secs }}"
                                                     data-timecode="{{ match.Transcript.timecode_secs }}"
                                                     data-episode="{{ match.Episode.number }}">
                                                 <div class="play-btn">

@@ -6,8 +6,8 @@
 
 {% block app_content %}
 <ul>
-{% for i in episodes %}
-    <li><a href="{{ i }}">{{ i }}</a></li>
+{% for s in shows %}
+    <li><a href="{{ url_for('episode_bp.show_home', showTitle = s.title) }}">{{ s.title }}</a></li>
 {% endfor %}
 </ul>
 
