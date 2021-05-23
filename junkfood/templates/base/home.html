@@ -3,25 +3,37 @@
 {% block content %}
     {{ super() }}
 
-<main>
-    <div class="logo-heading">
-        <h1 style="font-size: 4em;">junkfood.fm</h1>
-    </div>
-    <div class="logo-links">
-        <a href="{{ url_for('auth_bp.login') }}">Login</a>
-
-        <a href="{{ url_for('episode_bp.random') }}">Random episode</a>
-
-    </div>
-    <div>
-      <form method="post" action="{{ url_for('search_bp.search') }}" accept-charset="UTF-8">
-        <div class="form-group">
-          <input size=20 type="text" id="search" name="search" class="form-control" placeholder="Simple search..">
+    <main>
+        <div class="logo-heading">
+            <h1 style="font-size: 4em;">junkfood.fm</h1>
         </div>
-        <br/>
-        <button type="submit" class="btn btn-default">Search</button>
-      </form>
-    </div>
-</main>
-{%- endblock content %}
+        <div class="logo-links">
+            <span>
+            <a href="{{ url_for('auth_bp.login') }}">Login</a>
+            </span>
+            <span>
+            <a href="{{ url_for('episode_bp.random') }}">Random episode</a>
+            </span>
+        </div>
+        <div>
+            <form method="post" action="{{ url_for('search_bp.search') }}" accept-charset="UTF-8">
+                <div class="form-group">
+                    <input size=20 type="text" id="search" name="search" class="form-control"
+                           placeholder="Simple search..">
+                </div>
+                <br/>
+                <button type="submit" class="btn btn-default">Search</button>
+            </form>
+        </div>
+    </main>
 
+    {%- block footer %}
+        <footer class="footer bg-light">
+            <b><a href="https://junkfood.fm">JunkFood.fm</a></b> created and maintained by <a
+                href="https://twitter.com/MattBargenquast">Matt Bargenquast</a> | This is a fan-made site. All audio
+            content
+            comes from <a href="https://filmjunk.com">FilmJunk.com</a>.
+        </footer>
+    {%- endblock footer %}
+
+{%- endblock content %}
