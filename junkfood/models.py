@@ -100,6 +100,7 @@ class Episode(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     episode = db.Column(db.String(64))
     date = db.Column(db.Date)
+    title = db.Column(db.Unicode(255))
     homepage = db.Column(db.Unicode(255))
     media = db.Column(db.Unicode(255))
     premium = db.Column(db.Boolean)
