@@ -304,3 +304,11 @@ input[type="submit"] {
     text-align: center;
     color: #f3f3f3;
 }
+
+.panel-title {
+    font-size: 16px;
+    font-family: verdana, sans-serif;
+    color: #76ff03;
+    text-shadow: 2px 2px 5px black;
+}
+
