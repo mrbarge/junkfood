@@ -62,7 +62,7 @@
                                 {% for match in matches.items %}
                                     <tr>
                                         <td>
-                                            <a href="{{ url_for('episode_bp.view', showTitle=match.Show.title,episodeNumber=match.Episode.episode) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.Episode.episode }}</a>
+                                            <a href="{{ url_for('episode_bp.view', show_title=match.Show.title,episode_number=match.Episode.episode) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.Episode.episode }}</a>
                                         </td>
                                         <td>
                                             <button class="player-src"
