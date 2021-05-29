@@ -1,39 +1,70 @@
+import sqlalchemy
 from flask import Blueprint, render_template, current_app
 from flask_login import current_user
-from junkfood import models
-
+from sqlalchemy.sql.expression import func as sqlfunc
+from junkfood.exceptions import ApplicationError
+from junkfood.models import Show, Episode, Transcript, TermFrequency, Terms, StarredTranscripts
 
 episode_bp = Blueprint('episode_bp', __name__)
 
 
-
 @episode_bp.route('/')
 def home():
-    shows = models.get_all_shows()
-    return render_template('episode/list_shows.html', shows=shows)
+    try:
+        shows = Show.query.all()
+        return render_template('episode/list_shows.html', shows=shows)
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise ApplicationError('Unable to list available shows.', status_code=500)
 
 
-@episode_bp.route('/<showTitle>')
-def show_home(showTitle):
-    episodes = models.get_all_episode_numbers(showTitle)
-    return render_template('episode/list_episodes.html', showTitle=showTitle, episodes=episodes)
+@episode_bp.route('/<show_title>')
+def show_home(show_title):
+    try:
+        show = Show.query.filter(Show.title == show_title).first()
+        rows = Episode.query.filter(Episode.show == show.id).distinct(Episode.id)
+        episodes = [episode.episode for episode in rows]
+        return render_template('episode/list_episodes.html', showTitle=show_title, episodes=episodes)
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise ApplicationError(f'Unable to list shows available for {show_title}.', status_code=500)
 
 
-@episode_bp.route('/<showTitle>/<episodeNumber>', methods=['GET'], defaults={'timecode': '0'})
-@episode_bp.route('/<showTitle>/episodeNumber>/<timecode>', methods=['GET'])
-def view(showTitle, episodeNumber, timecode):
-    show = models.get_show_by_title(showTitle)
-    episode = models.get_episode(show.id, episodeNumber)
-    transcripts = models.get_transcripts(episode.id)
-    terms = models.get_terms_for_episode(episode.id, current_app.config['TERMS_PER_EPISODE'])
-    transcript_stars = []
-    if current_user.is_authenticated:
-        transcript_stars = models.get_stars(current_user.id, episode.id)
-    return render_template('episode/view.html', episode=episode, show=show, transcripts=transcripts, timecode=timecode, stars=transcript_stars, terms=terms)
+@episode_bp.route('/<show_title>/<episode_number>', methods=['GET'], defaults={'timecode': '0'})
+@episode_bp.route('/<show_title>/<episode_number>/<timecode>', methods=['GET'])
+def view(show_title, episode_number, timecode):
+    try:
+        show = Show.query.filter(Show.title == show_title).first_or_404()
+        episode = Episode.query.filter(Episode.show == show.id, Episode.episode == episode_number).first_or_404()
+        transcripts = Transcript.query.filter(Transcript.episode == episode.id).order_by(Transcript.index)
+
+        all_terms = TermFrequency.query.join(Terms).add_columns(Terms.id, Terms.term, Terms.label).filter(
+            TermFrequency.episode_id == episode.id).order_by(TermFrequency.freq.desc()).limit(
+            current_app.config['TERMS_PER_EPISODE'])
+        top_terms = [{
+            'id': term[1],
+            'term': term[2],
+            'label': term[3],
+            'freq': term[0].freq
+        } for term in all_terms]
+        transcript_ids = [x.id for x in transcripts]
+
+        transcript_stars = []
+        if current_user.is_authenticated:
+            episode_stars = StarredTranscripts.query.filter(StarredTranscripts.user_id == current_user.id,
+                                                            StarredTranscripts.transcript_id.in_(transcript_ids))
+            transcript_starts = [row.transcript_id for row in episode_stars]
+
+        return render_template('episode/view.html', episode=episode, show=show, transcripts=transcripts,
+                               timecode=timecode,
+                               stars=transcript_stars, terms=top_terms)
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise ApplicationError(f'Unable to view episode.', status_code=500)
 
 
 @episode_bp.route('/random', methods=['GET'])
 def random():
-    episode = models.get_random_episode()
-    show = models.get_show(episode.show)
-    return view(show.title, episode.episode, 0)
+    try:
+        episode = Episode.query.filter().order_by(sqlfunc.random()).first()
+        show = Show.query.filter(Show.id == episode.show).first_or_404()
+        return view(show.title, episode.episode, 0)
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise ApplicationError(f'Unable to view random episode.', status_code=500)

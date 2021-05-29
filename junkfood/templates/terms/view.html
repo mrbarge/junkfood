@@ -20,7 +20,7 @@
                     <div class="panel-body">
                         <ul>
                         {% for e in episodes %}
-                            <li><a href="{{ url_for('episode_bp.view', showTitle=e.showTitle,episodeNumber=e.episodeNumber) }}">Episode {{ e.episodeNumber }}</a></li>
+                            <li><a href="{{ url_for('episode_bp.view', show_title=e.showTitle,episode_number=e.episodeNumber) }}">Episode {{ e.episodeNumber }}</a></li>
                         {% endfor %}
                         </ul>
                     </div>

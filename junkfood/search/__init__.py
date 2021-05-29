@@ -1,5 +1,8 @@
 import json
 from flask import redirect, url_for, Blueprint, render_template, request, Response, current_app
+from sqlalchemy import func
+
+from junkfood.models import Transcript
 from junkfood.search.forms import SearchForm
 from junkfood import models
 
@@ -12,7 +15,7 @@ def autocomplete():
         search = request.args.get('q')
         terms = search.split()
         if terms[-1] == 'speaker:':
-            speakers = models.get_speakers()
+            speakers = get_speakers()
             retdata = {
                 'matching_results': [' '.join(terms[:-1] + [f'speaker:{s[0]}']) for s in speakers]
             }
@@ -39,3 +42,18 @@ def search(page=None, search=None):
         return render_template('search/search.html', form=search_form, matches=matches, search=search)
 
     return render_template('search/search.html', form=search_form, matches=matches)
+
+
+def get_speakers():
+    '''
+    Retrieve all speakers
+    :return: List of speaker tuples (value,presented name)
+    '''
+    all_speakers = Transcript.query.with_entities(Transcript.speaker,
+                                                  func.count(Transcript.speaker).label('total')).filter(
+        ~Transcript.speaker.startswith('Unknown')).group_by(
+        Transcript.speaker).order_by(desc('total'))
+    speakers = [x.speaker for x in all_speakers]
+    return speakers
+
+

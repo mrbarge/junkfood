@@ -1,9 +1,13 @@
 import os.path
 import traceback
+
+import sqlalchemy
 import validators
 from flask import redirect, url_for, Blueprint, render_template, jsonify, flash, send_from_directory, current_app, abort
 from flask_login import current_user
 from junkfood import models, db
+from junkfood.exceptions import ApplicationError
+from junkfood.models import Episode
 
 media_bp = Blueprint('media_bp', __name__)
 
@@ -11,7 +15,7 @@ media_bp = Blueprint('media_bp', __name__)
 @media_bp.route('/<int:show_id>/<episodeNumber>')
 def get(show_id, episodeNumber):
     try:
-        episode = models.get_episode(show_id, episodeNumber)
+        episode = Episode.query.filter(Episode.show == show_id, Episode.episode == episodeNumber).first()
 
         # If the media field is a URL, just redirect there
         if validators.url(episode.media):
@@ -22,5 +26,5 @@ def get(show_id, episodeNumber):
             abort(400)
         return send_from_directory('static', filename=episode.media)
 
-    except Exception as err:
-        abort(500)
+    except sqlalchemy.exc.SQLAlchemyError:
+        raise ApplicationError(f'Unable to retrieve media.', status_code=500)

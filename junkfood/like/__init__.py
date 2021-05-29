@@ -1,6 +1,10 @@
+import sqlalchemy
 from flask import redirect, url_for, Blueprint, render_template, jsonify, flash
 from flask_login import current_user
-from junkfood import models, db
+from sqlalchemy import func, desc
+
+from junkfood import db
+from junkfood.models import StarredTranscripts, Transcript, Episode, Show, Classics
 
 like_bp = Blueprint('like_bp', __name__)
 
@@ -10,8 +14,10 @@ def like(transcript_id):
     if not current_user.is_authenticated:
         return jsonify({'result': 'failed', 'transcript_id': transcript_id}), 401
     try:
-        models.like_transcript(current_user.id, transcript_id)
-    except Exception:
+        user_star = StarredTranscripts(user_id=current_user.id, transcript_id=transcript_id)
+        db.session.add(user_star)
+        db.session.commit()
+    except sqlalchemy.exc.SQLAlchemyError:
         return jsonify({'result': 'failed', 'transcript_id': transcript_id}), 500
     return jsonify({'result': 'success', 'transcript_id': transcript_id})
 
@@ -21,8 +27,10 @@ def unlike(transcript_id):
     if not current_user.is_authenticated:
         return jsonify({'result': 'failed', 'transcript_id': transcript_id}), 401
     try:
-        models.unlike_transcript(current_user.id, transcript_id)
-    except Exception:
+        StarredTranscripts.query.filter(StarredTranscripts.user_id == current_user.id,
+                                        StarredTranscripts.transcript_id == transcript_id).delete()
+        db.session.commit()
+    except sqlalchemy.exc.SQLAlchemyError:
         return jsonify({'result': 'failed', 'transcript_id': transcript_id}), 500
     return jsonify({'result': 'success', 'transcript_id': transcript_id})
 
@@ -33,10 +41,14 @@ def my_likes():
         flash('You must be logged in to view this feature.')
         return redirect(url_for('base_bp.home'))
     try:
-        matches = models.my_likes(current_user.id)
-        tops = models.top_likes()
-        return render_template('like/my_likes.html', matches=matches)
-    except Exception as e:
+        likes = StarredTranscripts.query.filter(StarredTranscripts.user_id == current_user.id)
+        like_transcripts = [x.transcript_id for x in likes]
+        transcripts = db.session.query(Transcript, Episode, Show).filter(
+            Transcript.episode == Episode.id,
+            Episode.show == Show.id,
+            Transcript.id.in_(like_transcripts)).all()
+        return render_template('like/my_likes.html', matches=transcripts)
+    except sqlalchemy.exc.SQLAlchemyError:
         flash('Unable to retrieve user favourites.')
     return redirect(url_for('base_bp.home'))
 
@@ -44,12 +56,17 @@ def my_likes():
 @like_bp.route('/all_time')
 def all_time():
     try:
-        matches = models.top_likes()
-        classics = models.classics()
-        print(classics)
-        return render_template('like/all_time.html', matches=matches)
-    except Exception as e:
-        print(e)
+        top_likes = StarredTranscripts.query.with_entities(StarredTranscripts.transcript_id,
+                                                           func.count(StarredTranscripts.transcript_id).label(
+                                                               'count')).group_by(
+            StarredTranscripts.transcript_id).order_by(desc('count')).limit(20).all()
+        like_transcripts = [x.transcript_id for x in top_likes]
+        transcripts = db.session.query(Transcript, Episode, Show).filter(
+            Transcript.episode == Episode.id,
+            Episode.show == Show.id,
+            Transcript.id.in_(like_transcripts)).all()
+        return render_template('like/all_time.html', matches=transcripts)
+    except sqlalchemy.exc.SQLAlchemyError:
         flash('Unable to retrieve user favourites.')
     return redirect(url_for('base_bp.home'))
 
@@ -57,9 +74,16 @@ def all_time():
 @like_bp.route('/classics')
 def classics():
     try:
-        matches = models.classics()
-        return render_template('like/classics.html', matches=matches)
-    except Exception as e:
-        print(e)
+        classics = Classics.query.filter().all()
+        classic_lookup = {}
+        for c in classics:
+            classic_lookup[c.transcript_id] = c.description
+        transcripts = db.session.query(Transcript, Classics, Episode, Show).filter(
+            Transcript.episode == Episode.id,
+            Episode.show == Show.id,
+            Transcript.id.in_(classic_lookup.keys()),
+            Classics.transcript_id == Transcript.id).all()
+        return render_template('like/classics.html', matches=transcripts)
+    except sqlalchemy.exc.SQLAlchemyError:
         flash('Unable to retrieve user favourites.')
     return redirect(url_for('base_bp.home'))

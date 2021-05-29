@@ -131,7 +131,7 @@
                     </div>
                     <div class="panel-body">
                         {% for t in terms %}
-                            <a href="{{ url_for('terms_bp.view', termId=t.id) }}">{{ t.term }}</a><br/>
+                            <a href="{{ url_for('terms_bp.view', term_id=t.id) }}">{{ t.term }}</a><br/>
                         {% endfor %}
                     </div>
                 </div>

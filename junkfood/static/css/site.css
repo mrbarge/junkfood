@@ -26,7 +26,7 @@ body {
 }
 
 .styled-table tbody tr {
-    border-bottom: thin solid #dddddd;
+    /*border-bottom: thin solid #dddddd;*/
     background-color: #212121;
 }
 
@@ -298,4 +298,9 @@ input[type="submit"] {
 
 .form-login-control {
     color: #1b1e21;
+}
+
+.page-missing-heading {
+    text-align: center;
+    color: #f3f3f3;
 }
