@@ -51,7 +51,7 @@ def view(show_title, episode_number, timecode):
         if current_user.is_authenticated:
             episode_stars = StarredTranscripts.query.filter(StarredTranscripts.user_id == current_user.id,
                                                             StarredTranscripts.transcript_id.in_(transcript_ids))
-            transcript_starts = [row.transcript_id for row in episode_stars]
+            transcript_stars = [row.transcript_id for row in episode_stars]
 
         return render_template('episode/view.html', episode=episode, show=show, transcripts=transcripts,
                                timecode=timecode,

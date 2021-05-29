@@ -17,7 +17,8 @@ def like(transcript_id):
         user_star = StarredTranscripts(user_id=current_user.id, transcript_id=transcript_id)
         db.session.add(user_star)
         db.session.commit()
-    except sqlalchemy.exc.SQLAlchemyError:
+    except sqlalchemy.exc.SQLAlchemyError as err:
+        print(err)
         return jsonify({'result': 'failed', 'transcript_id': transcript_id}), 500
     return jsonify({'result': 'success', 'transcript_id': transcript_id})
 
