@@ -1,7 +1,7 @@
 import sqlalchemy
 from flask import Blueprint, render_template, current_app
 from flask_login import current_user
-from sqlalchemy.sql.expression import func as sqlfunc
+from sqlalchemy.sql.expression import func as sqlfunc, desc
 from junkfood.exceptions import ApplicationError
 from junkfood.models import Show, Episode, Transcript, TermFrequency, Terms, StarredTranscripts
 
@@ -12,7 +12,7 @@ episode_bp = Blueprint('episode_bp', __name__)
 def home():
     try:
         shows = Show.query.all()
-        return render_template('episode/list_shows.html', shows=shows)
+        return render_template('episode/shows.html', shows=shows)
     except sqlalchemy.exc.SQLAlchemyError:
         raise ApplicationError('Unable to list available shows.', status_code=500)
 
@@ -21,11 +21,10 @@ def home():
 def show_home(show_title):
     try:
         show = Show.query.filter(Show.title == show_title).first()
-        rows = Episode.query.filter(Episode.show == show.id).distinct(Episode.id)
-        episodes = [episode.episode for episode in rows]
-        return render_template('episode/list_episodes.html', showTitle=show_title, episodes=episodes)
+        episodes = Episode.query.filter(Episode.show == show.id).order_by(desc(Episode.date)).all()
+        return render_template('episode/episodes.html', show=show, episodes=episodes)
     except sqlalchemy.exc.SQLAlchemyError:
-        raise ApplicationError(f'Unable to list shows available for {show_title}.', status_code=500)
+        raise ApplicationError(f'Unable to list episodes available for {show_title}.', status_code=500)
 
 
 @episode_bp.route('/<show_title>/<episode_number>', methods=['GET'], defaults={'timecode': '0'})

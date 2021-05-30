@@ -93,19 +93,24 @@
                                     page &gt;&gt;</a>
                             {% else %}Next page &gt;&gt;{% endif %}
                         {% else %}
-                            <form action="" method="post" novalidate class="form-inline">
-                                {{ form.hidden_tag() }}
-                                <p>
-                                <div class="form-group mx-sm-3 mb-2">
-                                    {{ form.search(size=50,class='form-control', placeholder='Search') }}
-                                    {{ form.submit(class='btn btn-primary mb-2') }}
-                                    {% for error in form.search.errors %}
-                                        <span style="color: red;">[{{ error }}]</span>
-                                    {% endfor %}
-                                </div>
 
-                                </p>
-                            </form>
+                            <div class="row">
+                                <div class="col-md-12">
+                                <form action="{{ url_for('search_bp.search') }}" method="post" novalidate
+                                      class="form-inline">
+                                    {{ form.hidden_tag() }}
+                                    <div class="col-md-12">
+                                        {{ form.search(size=50,class='form-control panel-input', placeholder='Search transcripts..') }}
+                                        <button type="submit" class="btn btn-primary">Search</button>
+                                    </div>
+                                    {#                                    {{ form.submit(class='btn btn-primary mb-2') }}#}
+{#                                    {% for error in form.search.errors %}#}
+{#                                        <span style="color: red;">[{{ error }}]</span>#}
+{#                                    {% endfor %}#}
+                                    </p>
+                                </form>
+                                </div>
+                            </div>
                         {% endif %}
                     </div>
                 </div>
@@ -138,7 +143,7 @@
                     </div>
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Play</h3>
+                            <h3 class="panel-title">Player</h3>
                         </div>
                         <div class="panel-body">
                             <div id="player">

@@ -56,6 +56,7 @@ class Show(db.Model):
     __tablename__ = 'show'
     id = Column(db.Integer, primary_key=True, autoincrement=True)
     title = Column('title', db.String(20))
+    logo = Column('logo', db.String(50))
 
 
 class Role(db.Model):

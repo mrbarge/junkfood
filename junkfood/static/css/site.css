@@ -276,7 +276,8 @@ main::before {
 input[type="text"] {
     display: block;
     border: 1px solid rgba(0, 0, 0, .5);
-    background: rgba(0, 0, 0, .25);
+    background: #222222;
+    /*background: rgba(0, 0, 0, .25);*/
 }
 
 input[type="password"] {
@@ -298,6 +299,7 @@ input[type="submit"] {
 
 .form-login-control {
     color: #1b1e21;
+    width: 100%;
 }
 
 .page-missing-heading {
@@ -312,3 +314,28 @@ input[type="submit"] {
     text-shadow: 2px 2px 5px black;
 }
 
+.with-bottom-margin {
+  margin-bottom: 10px;
+}
+
+img.rounded-corners {
+  border-radius: 10px;
+}
+
+.episode-heading {
+    font-size: 14px;
+    font-family: verdana, sans-serif;
+    color: #76ff03;
+    text-shadow: 2px 2px 5px black;
+}
+
+.episode-title {}
+
+.navbar-custom {
+    background-color: #332940;
+}
+
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-text {
+    color: #76ff03;
+}
