@@ -11,9 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 @login_manager.user_loader
 def load_user(user_id):
-    if user_id is not None:
-        return User.query.get(user_id)
-    return None
+    return User.query.filter(User.id == user_id).first()
 
 
 Base = declarative_base()
@@ -90,6 +88,13 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+    def can_view_archives(self):
+        row = db.session.query(User, RoleAssociation, Role).filter(User.id == RoleAssociation.user_id,
+                                                                   RoleAssociation.role_id == Role.id,
+                                                                   User.id == self.id,
+                                                                   Role.role == Role.PREMIUM).first()
+        return row
 
     def __repr__(self):
         return '<User {}>'.format(self.email)

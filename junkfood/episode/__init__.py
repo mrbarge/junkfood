@@ -2,8 +2,11 @@ import sqlalchemy
 from flask import Blueprint, render_template, current_app
 from flask_login import current_user
 from sqlalchemy.sql.expression import func as sqlfunc, desc
+
+from junkfood import db
 from junkfood.exceptions import ApplicationError
-from junkfood.models import Show, Episode, Transcript, TermFrequency, Terms, StarredTranscripts
+from junkfood.models import Show, Episode, Transcript, TermFrequency, Terms, StarredTranscripts, User, RoleAssociation, \
+    Role
 
 episode_bp = Blueprint('episode_bp', __name__)
 
@@ -55,7 +58,7 @@ def view(show_title, episode_number, timecode):
         return render_template('episode/view.html', episode=episode, show=show, transcripts=transcripts,
                                timecode=timecode,
                                stars=transcript_stars, terms=top_terms)
-    except sqlalchemy.exc.SQLAlchemyError:
+    except sqlalchemy.exc.SQLAlchemyError as err:
         raise ApplicationError(f'Unable to view episode.', status_code=500)
 
 

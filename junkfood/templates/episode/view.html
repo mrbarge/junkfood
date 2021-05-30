@@ -32,7 +32,9 @@
                             <div id="tc_0">
                                 <table class="styled-table">
                                     <tr>
+                                        {% if not (episode.premium or episode.archive) or ((episode.premium or episode.archive) and current_user.is_authenticated and current_user.can_view_archives()) %}
                                         <th>Listen</th>
+                                        {% endif %}
                                         <th>Timecode</th>
                                         <th>Speaker</th>
                                         <th>Transcript</th>
@@ -43,6 +45,7 @@
 
                                     {% for t in transcripts %}
                                         <tr>
+                                            {% if not (episode.premium or episode.archive) or ((episode.premium or episode.archive) and current_user.is_authenticated and current_user.can_view_archives()) %}
                                             <td>
                                                 <div id="tc_{{ t.timecode_secs }}">
                                                     <button class="player-src"
@@ -57,6 +60,7 @@
                                                     </button>
                                                 </div>
                                             </td>
+                                            {% endif %}
                                             <td>
                                                 {{ t.timecode }}
                                             </td>
@@ -118,10 +122,14 @@
                         <h3 class="panel-title">Player</h3>
                     </div>
                     <div class="panel-body">
+                        {% if not (episode.premium or episode.archive) or ((episode.premium or episode.archive) and current_user.is_authenticated and current_user.can_view_archives()) %}
                         <div id="player">
                             <audio id="js-player">
                             </audio>
                         </div>
+                        {% else %}
+                            Audio only available to restricted members.
+                        {% endif %}
                     </div>
                 </div>
                 <div class="panel panel-default">
