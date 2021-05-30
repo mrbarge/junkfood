@@ -7,8 +7,9 @@ except ImportError:
     # older releases
     from werkzeug.contrib.fixers import ProxyFix
 
+app = create_app()
+
 if __name__ == "__main__":
-    app = create_app()
     app.debug = True
     app.wsgi_app = ProxyFix(app.wsgi_app)
     app.run(host='0.0.0.0', port=8080)
