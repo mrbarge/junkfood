@@ -44,6 +44,7 @@ def create_app():
         from junkfood.terms import term_bp
         from junkfood.error import error_bp
         from junkfood.media import media_bp
+        from junkfood.protected import protected_bp
 
         # add blueprints
         app.register_blueprint(base_bp, url_prefix='/')
@@ -54,5 +55,6 @@ def create_app():
         app.register_blueprint(term_bp, url_prefix='/terms')
         app.register_blueprint(error_bp, url_prefix='/error')
         app.register_blueprint(media_bp, url_prefix='/media')
+        app.register_blueprint(protected_bp, url_prefix='/protected')
 
         return app

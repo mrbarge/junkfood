@@ -23,7 +23,7 @@ RUN chown junkfood /usr/src/app
 COPY --chown=junkfood . /usr/src/app/ 
 
 # set up data mount directory
-RUN mkdir /usr/src/app/junkfood/static/data && chown junkfood:junkfood /usr/src/app/junkfood/static/data
-VOLUME /usr/src/app/junkfood/static/data
+RUN mkdir /usr/src/app/junkfood/protected/data && chown junkfood:junkfood /usr/src/app/junkfood/protected/data
+VOLUME /usr/src/app/junkfood/protected/data
 
 USER junkfood

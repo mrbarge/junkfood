@@ -1,11 +1,7 @@
-import os.path
-import traceback
-
 import sqlalchemy
 import validators
-from flask import redirect, url_for, Blueprint, render_template, jsonify, flash, send_from_directory, current_app, abort
+from flask import redirect, Blueprint, send_from_directory, abort, url_for
 from flask_login import current_user
-from junkfood import models, db
 from junkfood.exceptions import ApplicationError
 from junkfood.models import Episode
 
@@ -24,7 +20,7 @@ def get(show_id, episodeNumber):
         # Otherwise assume it's a local path, only allow that for authenticated users
         if not current_user.is_authenticated:
             abort(400)
-        return send_from_directory('static', filename=episode.media)
+        return redirect(url_for('protected_bp.protected', filename=episode.media))
 
     except sqlalchemy.exc.SQLAlchemyError:
         raise ApplicationError(f'Unable to retrieve media.', status_code=500)
