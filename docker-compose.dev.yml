@@ -17,6 +17,7 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     environment:
       - POSTGRES_USER=junkfood
+      - POSTGRES_PASSWORD=junkfood
       - POSTGRES_DB=junkfood
     env_file:
       - /home/matt/workspace/junkfood/.env.dev  
