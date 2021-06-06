@@ -18,8 +18,12 @@ COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN pip install -r requirements.txt
 
 # copy project
-RUN addgroup -S junkfood && adduser -S junkfood -G junkfood
-RUN chown junkfood /usr/src/app
+RUN addgroup -S -g 1001 junkfood && adduser -S -u 1001 junkfood -G junkfood
+RUN chown junkfood /usr/src/app 
 COPY --chown=junkfood . /usr/src/app/ 
+
+# set up data mount directory
+RUN mkdir /usr/src/app/junkfood/static/data && chown junkfood:junkfood /usr/src/app/junkfood/static/data
+VOLUME /usr/src/app/junkfood/static/data
 
 USER junkfood

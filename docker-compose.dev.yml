@@ -2,12 +2,18 @@ version: '3.8'
 
 services:
   web:
-    build: /home/matt/workspace/junkfood/
+    build: ./
     command: python app.py run -h 0.0.0.0
     ports:
       - 5000:8080
+    environment:
+      - FLASK_APP=junkfood
+      - FLASK_ENV=development
+      - DATABASE_URI=postgresql://junkfood:junkfood:5432/junkfood      
     env_file:
-      - /home/matt/workspace/junkfood/.env.dev
+      - ./.env.dev
+    volumes: 
+      - /junkfood-data:/usr/src/app/junkfood/static/data:z
     depends_on:
       - db
   db:
@@ -20,6 +26,6 @@ services:
       - POSTGRES_PASSWORD=junkfood
       - POSTGRES_DB=junkfood
     env_file:
-      - /home/matt/workspace/junkfood/.env.dev  
+      - ./.env.dev  
 volumes:
   postgres_data:      
