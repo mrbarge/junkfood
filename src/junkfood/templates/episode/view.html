@@ -2,12 +2,12 @@
 
 {% block styles %}
     {{ super() }}
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.6.7/plyr.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/css/plyr.css') }}">
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
-    <script src="https://cdn.plyr.io/3.6.7/plyr.polyfilled.js"></script>
+    <script src="{{ url_for('static', filename='vendor/js/plyr.polyfilled.js') }}"></script>
     <script src="{{ url_for('static', filename='mark/mark.js') }}"></script>
     <script src="{{ url_for('static', filename='js/like.js') }}"></script>
     <script src="{{ url_for('static', filename='js/setup-plyr.js') }}"></script>

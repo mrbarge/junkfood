@@ -6,14 +6,15 @@
 
 {% block styles %}
     {{ super() }}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/css/jquery-ui.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/site.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='vendor/js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/js/jquery-ui.min.js') }}"></script>
 {% endblock %}
 
 {% block navbar %}
