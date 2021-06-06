@@ -1,0 +1,7 @@
+migrations
+junkfood/static/data
+__pycache__
+.ropeproject
+.git
+.idea
+

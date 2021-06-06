@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  web:
+    build: /home/matt/workspace/junkfood/
+    command: python app.py run -h 0.0.0.0
+    ports:
+      - 5000:8080
+    env_file:
+      - /home/matt/workspace/junkfood/.env.dev
+    depends_on:
+      - db
+  db:
+    restart: always
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=junkfood
+      - POSTGRES_DB=junkfood
+    env_file:
+      - /home/matt/workspace/junkfood/.env.dev  
+volumes:
+  postgres_data:      
