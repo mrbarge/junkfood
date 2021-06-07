@@ -9,28 +9,32 @@ services:
         EMAIL: ${EMAIL}
         FLASK: application
     ports:
-      - 80:80
-      - 443:443
+      - 8080:80
+      - 8443:443
     volumes:
-      - /etc/letsencrypt:/etc/letsencrypt
+      - /home/junkfood/certs:/etc/letsencrypt
     depends_on:
       - application
 
   application:
-    build: ./
+    build: ./${APP_FOLDER}
     command: gunicorn --bind 0.0.0.0:5000 app:app
     ports:
       - 5000:5000    
     depends_on:
       - db
     volumes: 
-      - /home/matt/junkfood-data/data:/usr/src/app/junkfood/protected/data:z
+      - /data/junkfood/filmjunk:/usr/src/app/junkfood/protected/data/filmjunk:z
+    env_file:
+      - ./.env
 
   db:
     restart: always
     image: postgres:13-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
       
 volumes:
   postgres_data:      
