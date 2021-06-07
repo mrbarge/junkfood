@@ -12,7 +12,14 @@
             <span>
             <a href="{{ url_for('auth_bp.login') }}">Login</a>
             </span>
+            {% else %}
+            <span>
+            <a href="{{ url_for('auth_bp.logout') }}">Logout</a>
+            </span>
             {% endif %}
+            <span>
+                <a href="{{ url_for('episode_bp.home') }}">List Shows</a>
+            </span>
             <span>
             <a href="{{ url_for('episode_bp.random') }}">Random episode</a>
             </span>
