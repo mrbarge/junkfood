@@ -24,6 +24,9 @@ body {
 .styled-table td {
     padding: 6px 15px;
 }
+.styled-table td a {
+    color: #00b3ff;
+}
 
 .styled-table tbody tr {
     /*border-bottom: thin solid #dddddd;*/
@@ -237,42 +240,6 @@ main::before {
     color: #fafafa;
 }
 
-[placeholder]::-webkit-input-placeholder {
-    color: rgba(255, 255, 255, .8);
-}
-
-[placeholder]:hover::-webkit-input-placeholder {
-    color: rgba(255, 255, 255, .4);
-}
-
-[placeholder]:focus::-webkit-input-placeholder {
-    color: transparent;
-}
-
-[placeholder]::-moz-placeholder {
-    color: rgba(255, 255, 255, .8);
-}
-
-[placeholder]:hover::-moz-placeholder {
-    color: rgba(255, 255, 255, .4);
-}
-
-[placeholder]:focus::-moz-placeholder {
-    color: transparent;
-}
-
-[placeholder]:-ms-input-placeholder {
-    color: rgba(255, 255, 255, .8);
-}
-
-[placeholder]:hover:-ms-input-placeholder {
-    color: rgba(255, 255, 255, .4);
-}
-
-[placeholder]:focus:-ms-input-placeholder {
-    color: transparent;
-}
-
 input[type="text"] {
     display: block;
     border: 1px solid rgba(0, 0, 0, .5);
@@ -283,7 +250,7 @@ input[type="text"] {
 input[type="password"] {
     display: block;
     border: 1px solid rgba(0, 0, 0, .5);
-    background: rgba(0, 0, 0, .25);
+    background: #222222;
 }
 
 input[type="submit"] {
@@ -338,4 +305,9 @@ img.rounded-corners {
 .navbar-custom .navbar-brand,
 .navbar-custom .navbar-text {
     color: #76ff03;
+}
+
+mark{
+    background: #69f0ae;
+    color: black;
 }
