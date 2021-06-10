@@ -33,6 +33,7 @@ def show_home(show_title):
 @episode_bp.route('/<show_title>/<episode_number>', methods=['GET'], defaults={'timecode': '0'})
 @episode_bp.route('/<show_title>/<episode_number>/<timecode>', methods=['GET'])
 def view(show_title, episode_number, timecode):
+    current_app.logger.info(f'viewing show:{show_title} episode:{episode_number}')
     try:
         show = Show.query.filter(Show.title == show_title).first_or_404()
         episode = Episode.query.filter(Episode.show == show.id, Episode.episode == episode_number).first_or_404()
@@ -67,6 +68,7 @@ def random():
     try:
         episode = Episode.query.filter().order_by(sqlfunc.random()).first()
         show = Show.query.filter(Show.id == episode.show).first_or_404()
+        current_app.logger.info(f'returning random show:{show.title} episode:{episode.id}')
         return view(show.title, episode.episode, 0)
     except sqlalchemy.exc.SQLAlchemyError:
         raise ApplicationError(f'Unable to view random episode.', status_code=500)

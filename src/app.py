@@ -1,3 +1,5 @@
+import logging
+
 from junkfood import create_app
 
 try:
@@ -8,6 +10,13 @@ except ImportError:
     from werkzeug.contrib.fixers import ProxyFix
 
 app = create_app()
+
+
+def init_logging():
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+
 
 if __name__ == "__main__":
     app.debug = True

@@ -18,7 +18,7 @@ services:
 
   application:
     build: ./${APP_FOLDER}
-    command: gunicorn --bind 0.0.0.0:5000 app:app
+    command: gunicorn --bind 0.0.0.0:5000 --log-level=info app:app
     ports:
       - 5000:5000    
     depends_on:

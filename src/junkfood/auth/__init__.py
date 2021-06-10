@@ -1,7 +1,7 @@
 from junkfood.auth.forms import LoginForm, RegisterForm, ResetPasswordForm, SetPasswordForm
 from junkfood.models import User, Role, RoleAssociation
 from flask import Blueprint, redirect, url_for, request, flash, render_template, current_app
-from flask_login import login_required, logout_user, current_user, login_user, login_manager
+from flask_login import login_required, logout_user, current_user, login_user
 from junkfood.models import db
 from itsdangerous import URLSafeTimedSerializer
 
@@ -23,9 +23,9 @@ def login():
     if form.validate_on_submit() or request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
-        print(email)
         user = User.query.filter_by(email=email).first()
         if not user:
+            current_app.logger.info(f'unknown user login attempt:{email}')
             flash('Invalid username/password combination')
             return redirect(url_for('auth_bp.login'))
 
@@ -36,9 +36,11 @@ def login():
         if user.check_password(password=password):
             login_user(user)
             next_page = request.args.get('next')
+            current_app.logger.info(f'user logged in:{email}')
             return redirect(next_page or url_for('base_bp.home'))
 
         flash('Invalid username or password.')
+        current_app.logger.info(f'invalid login attempt for user:{email}')
         return redirect(url_for('auth_bp.login'))
     return render_template('auth/login.html', form=form)
 

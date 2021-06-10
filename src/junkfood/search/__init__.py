@@ -35,9 +35,11 @@ def search(page=None, search=None):
     if request.method == 'POST':
         search = request.form.get("search")
         page = request.args.get('page', 1, type=int)
+        current_app.logger.info(f'performing search for:{search}')
         return redirect(url_for('search_bp.search', page=page, search=search))
 
     if page is not None and search is not None:
+        current_app.logger.info(f'returning search for:{search} page:{page}')
         matches = models.search(search, page, current_app.config['ITEMS_PER_PAGE'], current_app.config['MAX_SEARCH_RESULTS'])
         return render_template('search/search.html', form=search_form, matches=matches, search=search)
 
