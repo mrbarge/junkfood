@@ -1,0 +1,172 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/css/plyr.css') }}">
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='mark/mark.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/js/plyr.js') }}"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#search_autocomplete").autocomplete({
+                source: function (request, response) {
+                    $.getJSON("{{url_for('search_bp.autocomplete')}}", {
+                        q: request.term,
+                    }, function (data) {
+                        response(data.matching_results);
+                    });
+                },
+                minLength: 5,
+            });
+        })
+    </script>
+    <script src="{{ url_for('static', filename='js/highlight-transcript.js') }}"></script>
+    <script>
+        setupHighlightTranscript('{{ search }}');
+    </script>
+    <script src="{{ url_for('static', filename='js/setup-plyr.js') }}"></script>
+    <script>
+        setupPlyr();
+    </script>
+
+
+{% endblock %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-9 col-md-push-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        {% if matches %}
+                            <h3 class="panel-title">Search Results</h3>
+                        {% else %}
+                            <h3 class="panel-title">Search</h3>
+                        {% endif %}
+                    </div>
+                    <div class="panel-body">
+                        {% if matches %}
+                        Displaying search results for <code>{{ search }}</code>
+                        <div class="row">
+                            <form action="{{ url_for('search_bp.search') }}" method="post" novalidate
+                                  class="form-inline">
+                                {{ form.hidden_tag() }}
+                                <div class="col-md-12">
+                                    {{ form.search(size=50,class='form-control panel-input', value=search) }}
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </div>
+                                </p>
+                            </form>
+                        </div>
+                        <br/>
+                        {% endif %}
+                        {% if matches %}
+                        <div class="transcript">
+                            <table class="styled-table">
+                                <tr>
+                                    <th>Episode</th>
+                                    <th>Listen</th>
+                                    <th>Speaker</th>
+                                    <th>Timecode</th>
+                                    <th>Transcript</th>
+                                </tr>
+                                {% for match in matches.items %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('episode_bp.view', show_title=match.Show.title,episode_number=match.Episode.episode) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.Episode.episode }}</a>
+                                        </td>
+                                        <td>
+                                            {% if not (match.Episode.premium or match.Episode.archive) or ((match.Episode.premium or match.Episode.archive) and current_user.is_authenticated and current_user.can_view_archives()) %}
+                                            <button class="player-src"
+                                                    data-src="{{ url_for('media_bp.get', show_id=match.Episode.show, episodeNumber=match.Episode.episode) }}#t={{ match.Transcript.timecode_secs }}"
+                                                    data-timecode="{{ match.Transcript.timecode_secs }}"
+                                                    data-episode="{{ match.Episode.number }}">
+                                                <div class="play-btn">
+                                                    <span style="font-size: 2em; color: #aed581;">
+                                                        <i class="fas fa-play-circle" aria-hidden="true"></i>
+                                                    </span>
+                                                </div>
+                                            </button>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ match.Transcript.speaker }}</td>
+                                        <td>{{ match.Transcript.timecode }}</td>
+                                        <td>{{ match.Transcript.transcript }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+
+                            {% if matches.has_prev %}
+                                <a href="{{ url_for('search_bp.search', page=matches.prev_num, search=search) }}">&lt;&lt;
+                                    Previous
+                                    page</a>
+                            {% else %}&lt;&lt; Previous page{% endif %} |
+                            {% if matches.has_next %}
+                                <a href="{{ url_for('search_bp.search', page=matches.next_num, search=search) }}">Next
+                                    page &gt;&gt;</a>
+                            {% else %}Next page &gt;&gt;{% endif %}
+                        </div>
+                        {% else %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                <form action="{{ url_for('search_bp.search') }}" method="post" novalidate
+                                      class="form-inline">
+                                    {{ form.hidden_tag() }}
+                                    <div class="col-md-12">
+                                        {{ form.search(size=50,class='form-control panel-input', placeholder='Search transcripts..') }}
+                                        <button type="submit" class="btn btn-primary">Search</button>
+                                    </div>
+                                    </p>
+                                </form>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-3 col-md-pull-9">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Search Tips</h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul>
+                                <li><b>episode:</b><i>number</i></li>
+                                <code>episode:605</code>
+                                <li><b>since:</b><i>date</i></li>
+                                <code>since:2021-03-01</code>
+                                <code>since:2019</code>
+                                <li><b>until:</b><i>date</i></li>
+                                <code>until:2020-05-05</code>
+                                <code>until:2018</code>
+                                <li><b>speaker:</b><i>speaker</i></li>
+                                <code>speaker:Frank</code>
+                                <li><b>show:</b><i>show title</i></li>
+                                <code>show:"Film Junk"</code>
+                                <li><i>"spoken phrase"</i></li>
+                                <code>"cream dream supreme"</code>
+                            </ul>
+                        </div>
+                    </div>
+
+                {% if matches %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Player</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div id="player">
+                                <audio id="js-player">
+                                </audio>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

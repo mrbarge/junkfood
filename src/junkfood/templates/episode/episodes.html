@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+{% endblock %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ show.title }} Episodes</h3>
+                    </div>
+                    <div class="panel-body">
+                    {% if episodes is defined and episodes|length > 0 %}
+                        {% for episode_row in episodes | batch(4) %}
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                {% for episode in episode_row %}
+                                    <div class="col-md-3 with-bottom-margin">
+
+                                        <a href="{{ url_for('episode_bp.view', show_title=show.title, episode_number=episode.episode, timecode=0) }}">
+                                            <div class="episode-heading">Episode {{ episode.episode }}</div>
+                                            {% if episode.title != None %}
+                                            <div class="episode-title">{{ episode.title }}</div>
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="row">
+                        No episodes added yet, sorry - check again soon!
+                        </div>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

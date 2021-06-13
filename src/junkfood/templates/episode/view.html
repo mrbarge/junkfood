@@ -1,0 +1,148 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/css/plyr.css') }}">
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='vendor/js/plyr.polyfilled.js') }}"></script>
+    <script src="{{ url_for('static', filename='mark/mark.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/like.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/setup-plyr.js') }}"></script>
+    <script>
+        setupPlyr();
+        loadMedia('{{ url_for('media_bp.get', show_id=episode.show, episodeNumber=episode.episode) }}', '{{ episode.episode }}', false);
+    </script>
+
+
+{% endblock %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-9 col-md-push-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ show.title }} Episode {{ episode.episode }}{% if episode.title %}: {{ episode.title }}{% endif %}</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="transcript">
+                            <div id="tc_0">
+                                <table class="styled-table">
+                                    <tr>
+                                        {% if not (episode.premium or episode.archive) or ((episode.premium or episode.archive) and current_user.is_authenticated and current_user.can_view_archives()) %}
+                                        <th>Listen</th>
+                                        {% endif %}
+                                        <th>Timecode</th>
+                                        <th>Speaker</th>
+                                        <th>Transcript</th>
+                                        {% if current_user.is_authenticated %}
+                                            <th></th>
+                                        {% endif %}
+                                    </tr>
+
+                                    {% for t in transcripts %}
+                                        <tr>
+                                            {% if not (episode.premium or episode.archive) or ((episode.premium or episode.archive) and current_user.is_authenticated and current_user.can_view_archives()) %}
+                                            <td>
+                                                <div id="tc_{{ t.timecode_secs }}">
+                                                    <button class="player-src"
+                                                            data-src="{{ url_for('media_bp.get', show_id=episode.show, episodeNumber=episode.episode) }}#t={{ t.timecode_secs }}"
+                                                            data-timecode="{{ t.timecode_secs }}"
+                                                            data-episode="{{ episode.episode }}">
+                                                        <div class="play-btn">
+                                                            <span style="font-size: 2em; color: #aed581;">
+                                                                <i class="fas fa-play-circle" aria-hidden="true"></i>
+                                                            </span>
+                                                        </div>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            {% endif %}
+                                            <td>
+                                                {{ t.timecode }}
+                                            </td>
+                                            <td>{{ t.speaker }}</td>
+                                            <td>
+                                                {{ t.transcript }}
+                                            </td>
+                                            {% if current_user.is_authenticated %}
+                                                <td>
+                                                    {% if t.id in stars %}
+                                                        <form action="{{ url_for('like_bp.unlike', transcript_id=t.id) }}"
+                                                              method="POST"
+                                                              class='like-form' id="{{ t.id }}">
+                                                            <input type="hidden" name="post_id" value=1>
+                                                            <button type="submit"
+                                                                    class="btn btn-link g-color-gray-dark-v5 g-color-red--hover text-red p-0 border-0 btn-outline-light like-btn{{ t.id }}">
+                                                                <span style="font-size: 1em; color: tomato;">
+                                                                    <i class="fas fa-heart" aria-hidden="true"></i>
+                                                                </span>
+                                                            </button>
+                                                        </form>
+                                                    {% else %}
+                                                        <form action="{{ url_for('like_bp.like', transcript_id=t.id) }}"
+                                                              method="POST"
+                                                              class='like-form' id="{{ t.id }}">
+                                                            <input type="hidden" name="post_id" value=1>
+                                                            <button type="submit"
+                                                                    class="btn btn-link g-color-gray-dark-v5 g-color-red--hover text-red p-0 border-0 btn-outline-light like-btn{{ t.id }}">
+                                                                <span style="font-size: 1em; color: tomato;">
+                                                                    <i class="far fa-heart" aria-hidden="true"></i>
+                                                                </span>
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                </td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-3 col-md-pull-9">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Episode Details</h3>
+                    </div>
+                    <div class="panel-body">
+                        <b>{{ show.title }}</b><br/>
+                        <b>Episode</b>: {{ episode.episode }}<br/>
+                        <b>Date</b>: {{ episode.date }}<br/>
+                        <b>Homepage:</b> <a href="{{ episode.homepage }}">Link</a><br/>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Player</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% if not (episode.premium or episode.archive) or ((episode.premium or episode.archive) and current_user.is_authenticated and current_user.can_view_archives()) %}
+                        <div id="player">
+                            <audio id="js-player">
+                            </audio>
+                        </div>
+                        {% else %}
+                            Audio only available to restricted members.
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Topics Discussed</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% for t in terms %}
+                            <a href="{{ url_for('terms_bp.view', term_id=t.id) }}">{{ t.term }}</a><br/>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

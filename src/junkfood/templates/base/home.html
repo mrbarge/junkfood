@@ -1,0 +1,51 @@
+{% extends 'header-no-nav.html' %}
+
+{% block content %}
+    {{ super() }}
+
+    <main>
+        <div class="logo-heading">
+            <h1 style="font-size: 4em;">junkfood</h1>
+        </div>
+        <div class="logo-links">
+            {% if current_user.is_anonymous %}
+            <span>
+            <a href="{{ url_for('auth_bp.login') }}">Login</a>
+            </span>
+            {% else %}
+            <span>
+            <a href="{{ url_for('auth_bp.logout') }}">Logout</a>
+            </span>
+            {% endif %}
+            <span>
+                <a href="{{ url_for('episode_bp.home') }}">List Shows</a>
+            </span>
+            <span>
+                <a href="{{ url_for('like_bp.classics') }}">Classic Moments</a>
+            </span>
+            <span>
+            <a href="{{ url_for('episode_bp.random') }}">Random episode</a>
+            </span>
+        </div>
+        <div>
+            <form method="post" action="{{ url_for('search_bp.search') }}" accept-charset="UTF-8">
+                <div class="form-group">
+                    <input size=20 type="text" id="search" name="search" class="form-control"
+                           placeholder="Search the transcripts..">
+                </div>
+                <br/>
+                <button type="submit" class="btn btn-default">Search</button>
+            </form>
+        </div>
+    </main>
+
+    {%- block footer %}
+        <footer class="footer bg-light">
+            <b><a href="https://junkfood.site">JunkFood.site</a></b> created and maintained by <a
+                href="https://twitter.com/MattBargenquast">Matt Bargenquast</a> | This is a fan-made site. All audio
+            content
+            comes from <a href="https://filmjunk.com">FilmJunk.com</a>.
+        </footer>
+    {%- endblock footer %}
+
+{%- endblock content %}

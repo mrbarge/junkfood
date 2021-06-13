@@ -1,7 +1,22 @@
 version: '3.8'
 
 services:
-  web:
+  nginx:
+    build:
+      context: ./nginx
+      args:
+        DOMAIN: ${DOMAIN}
+        EMAIL: ${EMAIL}
+        FLASK: application
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - application
+
+  application:
     build: ./
     command: python app.py run -h 0.0.0.0
     ports:
@@ -16,6 +31,7 @@ services:
       - /junkfood-data:/usr/src/app/junkfood/static/data:z
     depends_on:
       - db
+      
   db:
     restart: always
     image: postgres:13-alpine

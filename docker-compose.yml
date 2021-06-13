@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: ./nginx
+      args:
+        DOMAIN: ${DOMAIN}
+        EMAIL: ${EMAIL}
+        FLASK: application
+    ports:
+      - 8080:80
+      - 8443:443
+    volumes:
+      - /home/junkfood/certs:/etc/letsencrypt
+    depends_on:
+      - application
+
+  application:
+    build: ./${APP_FOLDER}
+    command: gunicorn --bind 0.0.0.0:5000 --log-level=info app:app
+    ports:
+      - 5000:5000    
+    depends_on:
+      - db
+    volumes: 
+      - /data/junkfood/filmjunk:/usr/src/app/junkfood/protected/data/filmjunk:z
+    env_file:
+      - ./.env
+
+  db:
+    restart: always
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+      
+volumes:
+  postgres_data:      

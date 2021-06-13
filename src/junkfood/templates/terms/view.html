@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+    {{ super() }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+{% endblock %}
+
+{% block app_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-9 col-md-push-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Top episodes about {{ term.term }}</h3>
+                    </div>
+                    <div class="panel-body">
+                        <ul>
+                        {% for e in episodes %}
+                            <li><a href="{{ url_for('episode_bp.view', show_title=e.showTitle,episode_number=e.episodeNumber) }}">Episode {{ e.episodeNumber }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
