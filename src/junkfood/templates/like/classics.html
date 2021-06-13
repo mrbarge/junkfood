@@ -39,7 +39,7 @@
                                         <a href="{{ url_for('episode_bp.view', show_title=match.Show.title, episode_number=match.Episode.episode) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.Episode.episode }}</a>
                                     </td>
                                     <td>
-                                        {% if current_user.is_authenticated %}
+                                        {% if not (match.Episode.premium or match.Episode.archive) or ((match.Episode.premium or match.Episode.archive) and current_user.is_authenticated and current_user.can_view_archives()) %}
                                         <button class="player-src"
                                                 data-src="{{ url_for('media_bp.get', show_id=match.Episode.show, episodeNumber=match.Episode.episode) }}#t={{ match.Transcript.timecode_secs }}"
                                                 data-timecode="{{ match.Transcript.timecode_secs }}"
