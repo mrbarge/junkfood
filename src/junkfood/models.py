@@ -30,10 +30,18 @@ class StarredTranscripts(db.Model):
     transcript_id = Column('transcript_id', Integer, ForeignKey('transcripts.id'), primary_key=True)
 
 
+class ClassicCategories(db.Model):
+    __tablename__ = 'classic_category'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    category = Column('category', db.String(50))
+    description = Column('description', db.Text)
+
+
 class Classics(db.Model):
     __tablename__ = 'classics'
     transcript_id = Column('transcript_id', Integer, ForeignKey('transcripts.id'), primary_key=True)
     description = Column('description', db.Text)
+    category_id = Column('category_id', Integer, ForeignKey('classic_category.id'), autoincrement=False)
 
 
 class Terms(db.Model):

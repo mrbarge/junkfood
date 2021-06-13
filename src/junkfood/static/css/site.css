@@ -316,3 +316,10 @@ mark{
     background: #69f0ae;
     color: black;
 }
+
+.classics-body h3 {
+    font-size: 19px;
+    font-family: verdana, sans-serif;
+    color: #76ff03;
+    text-shadow: 2px 2px 5px black;
+}

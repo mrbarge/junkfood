@@ -23,14 +23,17 @@
                         <h3 class="panel-title">Classic Moments</h3>
                     </div>
                     <div class="panel-body">
-                        {% if matches %}
-                        <table class="styled-table" width="100%">
-                            <tr>
-                                <th>Episode</th>
-                                <th>Listen</th>
-                                <th>Description</th>
-                            </tr>
-                            {% for match in matches %}
+                        <div class="classics-body">
+                        {% for category in matches %}
+                            <h3>{{ category.category }}</h3>
+                            <p>{{ category.description }}</p>
+                            <table class="styled-table" width="100%">
+                                <tr>
+                                    <th width="10%">Episode</th>
+                                    <th width="10%">Listen</th>
+                                    <th width="80%">Description</th>
+                                </tr>
+                                {% for match in matches[category] %}
                                 <tr>
                                     <td>
                                         <a href="{{ url_for('episode_bp.view', show_title=match.Show.title, episode_number=match.Episode.episode) }}#tc_{{ match.Transcript.timecode_secs }}">{{ match.Episode.episode }}</a>
@@ -49,9 +52,10 @@
                                     </td>
                                     <td>{{ match.Classics.description }}</td>
                                 </tr>
-                            {% endfor %}
-                        </table>
-                        {% endif %}
+                                {% endfor %}
+                            </table>
+                        {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>

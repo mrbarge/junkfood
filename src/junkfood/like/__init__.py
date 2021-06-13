@@ -4,7 +4,7 @@ from flask_login import current_user
 from sqlalchemy import func, desc
 
 from junkfood import db
-from junkfood.models import StarredTranscripts, Transcript, Episode, Show, Classics
+from junkfood.models import StarredTranscripts, Transcript, Episode, Show, Classics, ClassicCategories
 
 like_bp = Blueprint('like_bp', __name__)
 
@@ -75,16 +75,15 @@ def all_time():
 @like_bp.route('/classics')
 def classics():
     try:
-        classics = Classics.query.filter().all()
-        classic_lookup = {}
-        for c in classics:
-            classic_lookup[c.transcript_id] = c.description
-        transcripts = db.session.query(Transcript, Classics, Episode, Show).filter(
-            Transcript.episode == Episode.id,
-            Episode.show == Show.id,
-            Transcript.id.in_(classic_lookup.keys()),
-            Classics.transcript_id == Transcript.id).all()
-        return render_template('like/classics.html', matches=transcripts)
+        results = {}
+        classic_categories = ClassicCategories.query.filter().all()
+        for cat in classic_categories:
+            results[cat] = db.session.query(Transcript, Classics, Episode, Show).filter(
+                Transcript.episode == Episode.id,
+                Episode.show == Show.id,
+                Classics.transcript_id == Transcript.id,
+                Classics.category_id == cat.id).all()
+        return render_template('like/classics.html', matches=results)
     except sqlalchemy.exc.SQLAlchemyError:
         flash('Unable to retrieve user favourites.')
     return redirect(url_for('base_bp.home'))
